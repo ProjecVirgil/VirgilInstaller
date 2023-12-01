@@ -1,5 +1,5 @@
 const { app, BrowserWindow } = require('electron');
-
+const path = require('path');
 
 function createWindow() {
     const win = new BrowserWindow({
@@ -11,7 +11,11 @@ function createWindow() {
         }
     });
 
-    win.loadURL(`${app.getAppPath()}\\build\\index.html`); // URL del server React
+    let indexPath;
+    indexPath = path.join(app.getAppPath(), 'build', 'index.html');
+    win.loadURL(`file://${indexPath}`);
+
+
     app.on('window-all-closed', () => {
         if (process.platform !== 'darwin') {
             app.quit()
