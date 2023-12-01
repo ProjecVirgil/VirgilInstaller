@@ -1,0 +1,23 @@
+body {
+  display: flex;
+  flex-direction: column;
+  font-family:
+    Roboto,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Helvetica Neue',
+    'Segoe UI',
+    'Oxygen',
+    'Ubuntu',
+    'Cantarell',
+    'Open Sans',
+    sans-serif;
+  color: #ffffff;
+  background-color: #1d1e27;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+}
+
