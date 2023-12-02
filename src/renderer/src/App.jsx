@@ -1,11 +1,7 @@
-import Components from './components/Components'
+//import nomeclassecomponente from './components/nomefile'
 
 function App() {
-  return (
-    <div className="container">
-      <Components></Components>
-    </div>
-  )
+  return <div className="container h-screen"></div>
 }
 
 export default App
