@@ -7,7 +7,9 @@ import App from './App'
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <NextUIProvider>
-      <App />
+      <main className="virgil-theme">
+        <App />
+      </main>
     </NextUIProvider>
   </React.StrictMode>
 )
