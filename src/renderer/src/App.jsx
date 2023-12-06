@@ -11,6 +11,7 @@ import PropTypes from 'prop-types'
 import StepConnector, { stepConnectorClasses } from '@mui/material/StepConnector'
 import Check from '@mui/icons-material/Check'
 import { styled } from '@mui/material/styles'
+import BStep from './components/BStep'
 
 const steps = ['Step 1', 'Step 2', 'Step 3', 'Step 4']
 
@@ -55,7 +56,7 @@ function App() {
   }
 
   const handleBack = () => {
-    if (activeStep >= 0){
+    if (activeStep > 0) {
       setActiveStep((prevActiveStep) => prevActiveStep - 1)
     }
   }
@@ -144,12 +145,17 @@ function App() {
           ))}
         </Stepper>
       </Box>
-      <Main></Main>
+      {activeStep !== steps.length ? (
+        <Main step={activeStep}></Main>
+      ) : (
+        <BStep label="PAGINA DI FINE"></BStep>
+      )}
       <DivBStep
         nextLabel={activeStep === steps.length - 1 ? 'Finish' : 'Next'}
         prevLabel="Prev"
         handleBack={handleBack}
         handleNext={handleNext}
+        isVisible={activeStep !== steps.length}
       ></DivBStep>
     </div>
   )
