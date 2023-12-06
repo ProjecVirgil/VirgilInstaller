@@ -38,10 +38,6 @@ function App() {
   const [activeStep, setActiveStep] = React.useState(0)
   const [skipped, setSkipped] = React.useState(new Set())
 
-  const isStepOptional = (step) => {
-    return step === 1
-  }
-
   const isStepSkipped = (step) => {
     return skipped.has(step)
   }
@@ -52,13 +48,16 @@ function App() {
       newSkipped = new Set(newSkipped.values())
       newSkipped.delete(activeStep)
     }
-
-    setActiveStep((prevActiveStep) => prevActiveStep + 1)
-    setSkipped(newSkipped)
+    if (activeStep < steps.length) {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1)
+      setSkipped(newSkipped)
+    }
   }
 
   const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1)
+    if (activeStep >= 0){
+      setActiveStep((prevActiveStep) => prevActiveStep - 1)
+    }
   }
 
   const QontoConnector = styled(StepConnector)(({ theme }) => ({
@@ -147,7 +146,7 @@ function App() {
       </Box>
       <Main></Main>
       <DivBStep
-        nextLabel= {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+        nextLabel={activeStep === steps.length - 1 ? 'Finish' : 'Next'}
         prevLabel="Prev"
         handleBack={handleBack}
         handleNext={handleNext}
