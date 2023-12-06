@@ -5,12 +5,14 @@
 
 @font-face{
   font-family:Montserrat;
-  src: url("fonts\\Montserrat-VariableFont_wght.ttf")
+  src: url("fonts/Montserrat-VariableFont_wght.ttf")
 }
 @font-face{
   font-family:Ubuntu;
-  src: url("fonts\\Ubuntu-Light.ttf")
+  src: url("fonts/Ubuntu-Light.ttf")
 }
+
+
 body {
   display: flex;
   flex-direction: column;
