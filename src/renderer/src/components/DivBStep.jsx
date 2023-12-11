@@ -1,8 +1,4 @@
-import React from 'react'
 import BStep from './BStep'
-
-// Verifica se window.require è definito e utilizza require solo in un contesto Electron
-const { ipcRenderer } = window.require ? window.require('electron') : {}
 
 function DivBStep(props) {
   const { handleNext, handleBack, nextLabel, prevLabel, isVisible } = props
@@ -13,11 +9,7 @@ function DivBStep(props) {
       {isVisible ? (
         <BStep handle={handleNext} label={nextLabel} Isfirst={true} />
       ) : (
-        <BStep
-          handle={() => ipcRenderer && ipcRenderer.send('close')}
-          label="Close"
-          Isfirst={true}
-        />
+        <BStep handle={() => window.api.send('close')} label="Close" Isfirst={true} />
       )}
     </div>
   )
