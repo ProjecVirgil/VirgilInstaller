@@ -12,8 +12,20 @@ import StepConnector, { stepConnectorClasses } from '@mui/material/StepConnector
 import Check from '@mui/icons-material/Check'
 import { styled } from '@mui/material/styles'
 import BStep from './components/BStep'
+import LoadingScreen from './components/LoadingScreen';
 
-const steps = ['Step 1', 'Step 2', 'Step 3', 'Step 4']
+if (window.api) {
+  console.log('Preload APIs are available')
+} else {
+  console.log('Preload APIs are not available')
+}
+
+let isSelected = false
+window.api.receive('checked', () => {
+  isSelected = !isSelected
+})
+
+const steps = ['Step 1', 'Step 2', 'Step 3', 'Step 4', 'Step 5']
 
 const stepStyle = {
   '& .Mui-active': {
@@ -34,10 +46,11 @@ const stepStyle = {
       fontSize: '15px'
     }
   }
-} //MuiStepLabel-label Mui-disabled css-1hv8oq8-MuiStepLabel-label
+}
 function App() {
   const [activeStep, setActiveStep] = React.useState(0)
   const [skipped, setSkipped] = React.useState(new Set())
+  const [loading, setLoading] = React.useState(true);
 
   const isStepSkipped = (step) => {
     return skipped.has(step)
@@ -45,13 +58,29 @@ function App() {
 
   const handleNext = () => {
     let newSkipped = skipped
-    if (isStepSkipped(activeStep)) {
-      newSkipped = new Set(newSkipped.values())
-      newSkipped.delete(activeStep)
-    }
-    if (activeStep < steps.length) {
-      setActiveStep((prevActiveStep) => prevActiveStep + 1)
-      setSkipped(newSkipped)
+    if (activeStep == 1) {
+      if (!isSelected) {
+        window.api.send('reminder_to_check')
+      } else {
+        isSelected = false
+        if (isStepSkipped(activeStep)) {
+          newSkipped = new Set(newSkipped.values())
+          newSkipped.delete(activeStep)
+        }
+        if (activeStep < steps.length) {
+          setActiveStep((prevActiveStep) => prevActiveStep + 1)
+          setSkipped(newSkipped)
+        }
+      }
+    } else {
+      if (isStepSkipped(activeStep)) {
+        newSkipped = new Set(newSkipped.values())
+        newSkipped.delete(activeStep)
+      }
+      if (activeStep < steps.length) {
+        setActiveStep((prevActiveStep) => prevActiveStep + 1)
+        setSkipped(newSkipped)
+      }
     }
   }
 
@@ -131,6 +160,14 @@ function App() {
      * @default false
      */
     completed: PropTypes.bool
+  }
+
+  React.useEffect(() => {
+    setTimeout(() => setLoading(false), 3000) // millisecondi
+  }, []);
+
+  if (loading) {
+    return <LoadingScreen />;
   }
 
   return (
