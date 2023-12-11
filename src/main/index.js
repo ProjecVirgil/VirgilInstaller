@@ -1,24 +1,29 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
-import { join } from 'path'
+import { app, BrowserWindow, ipcMain, dialog } from 'electron'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import icon from '../../resources/icons/icon.png?asset'
+import path from 'path'
+import icon from '../../resources/icons/icon.png'
 
 let mainWindow
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 500,
-    height: 450,
+    width: 600,
+    height: 500,
     resizable: false,
     roundedCorners: true,
     show: false,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
+      preload: path.join(__dirname, '../preload/index.js'),
       sandbox: false,
-      nodeIntegration: true,
-      contextIsolation: false
+      contextIsolation: true,
+      nodeIntegration: false,
+      webSecurity: true,
+      additionalArguments: ['--enable-features=SharedArrayBuffer'],
+      webviewTag: false,
+      enableRemoteModule: false,
+      worldSafeExecuteJavaScript: true
     }
   })
 
@@ -26,17 +31,12 @@ function createWindow() {
     mainWindow.show()
   })
 
-  mainWindow.webContents.setWindowOpenHandler((details) => {
-    shell.openExternal(details.url)
-    return { action: 'deny' }
-  })
-
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+    mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'))
   }
 }
 
@@ -72,12 +72,25 @@ app.on('window-all-closed', () => {
   }
 })
 
-function closeWindow() {
+ipcMain.on('close', () => {
   if (mainWindow) {
     mainWindow.close()
   }
-}
+})
 
-ipcMain.on('close', () => {
-  closeWindow()
+ipcMain.on('reminder_to_check', () => {
+  mainWindow.webContents.send('reminder')
+})
+
+ipcMain.on('check', () => {
+  mainWindow.webContents.send('checked')
+})
+
+ipcMain.on('open-file-dialog', async (event) => {
+  const result = await dialog.showOpenDialog(mainWindow, {
+    properties: ['openDirectory'] // Usa 'openFile' per file
+  })
+  if (!result.canceled && result.filePaths.length > 0) {
+    event.sender.send('selected-directory', result.filePaths[0])
+  }
 })
