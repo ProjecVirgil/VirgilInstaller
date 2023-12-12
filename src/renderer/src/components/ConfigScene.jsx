@@ -226,6 +226,7 @@ function GScene() {
                       With this key you can configure all the settings for your Virgil via mobile
                       app; For more info see{' '}
                       <a
+                        className="underline text-[#a58ef5]"
                         target="_blank"
                         href="https://github.com/ProjecVirgil/VirgilAI"
                         rel="noreferrer"
