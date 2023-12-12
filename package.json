@@ -1,6 +1,6 @@
 {
   "name": "VirgilInstaller",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "An installer for the use of VirgilAI",
   "main": "./out/main/index.js",
   "author": "Retr0",
@@ -27,6 +27,7 @@
     "@nextui-org/react": "^2.2.9",
     "@tailwindcss/nesting": "^0.0.0-insiders.565cd3e",
     "axios": "^1.6.2",
+    "cheerio": "^1.0.0-rc.12",
     "cssnano": "^6.0.1",
     "electron-updater": "^6.1.1",
     "framer-motion": "^10.16.12",
