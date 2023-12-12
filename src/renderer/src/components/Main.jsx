@@ -39,8 +39,7 @@ function Main(props) {
         ref={scrollRef}
         offset={100}
         size={20}
-        hideScrollBar
-        className="w-[100%] h-[99%] rounded-[24px] p-5 change_font scroll-smooth"
+        className="w-[100%] h-[99%] rounded-[24px] p-5 change_font scroll-smooth "
       >
         {content()}
       </ScrollShadow>
