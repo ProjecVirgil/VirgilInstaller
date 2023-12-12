@@ -114,13 +114,10 @@ ipcMain.on('downloadImage', (event) => {
           path.join('src', 'renderer', 'src', 'assets', 'img') + '/img' + index + '.svg',
           imageDataBuffer
         )
-        event.reply('imageDownloaded', 'Immagine scaricata e salvata con successo!')
+        event.reply('imageDownloaded', 'Image downloaded and saved successfully!')
       })
       .catch((error) => {
-        event.reply(
-          'imageDownloadError',
-          `Errore nel download e salvataggio dell'immagine: ${error.message}`
-        )
+        event.reply('imageDownloadError', `Error downloading and saving image: ${error.message}`)
       })
   }
 })
@@ -160,6 +157,7 @@ ipcMain.on('search_update', (event) => {
     const regex = /v\d+\.\d+\.\d+/ //add g for more results
     const results = content.match(regex)
     const last_version = results[0] //last version
+    //let last_version='v2.0.0' test value
     const packageJsonPath = path.join('package.json')
     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'))
     const actual_version = packageJson.version
