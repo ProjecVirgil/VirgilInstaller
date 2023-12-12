@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import NavbarMain from './components/NavbarMain'
 import Main from './components/Main'
 import DivBStep from './components/DivBStep'
