@@ -6,31 +6,20 @@ function Welcome() {
       </h1>
       <hr />
       <div className="flex  parent">
+        <img src="/src/assets/img/img0.svg" alt="VirgilAI" className="div1" />
         <img
-          src="https://img.shields.io/badge/2%2C1k-2%2C1k?style=for-the-badge&logo=visualstudiocode&label=Lines%20of%20code&labelColor=282a3&color=%23164773"
-          alt="VirgilAI"
-          className="div1"
-        />
-        <img
-          src="https://img.shields.io/github/commit-activity/w/Retr0100/VirgilAI?style=for-the-badge&logo=github&labelColor=%23282a3&color=%231B7F79"
+          src="/src/assets/img/img1.svg"
           alt="GitHub commit activity (branch)"
           className="div2"
         />
-        <img
-          src="https://img.shields.io/github/repo-size/Retr0100/VirgilAI?style=for-the-badge&logo=github&labelColor=%23282a3&color=%23bd93f9"
-          alt="GitHub repo size"
-          className="div3"
-        />
+        <img src="/src/assets/img/img2.svg" alt="GitHub repo size" className="div3" />
         <a
           href="https://scrutinizer-ci.com/g/Retr0100/VirgilAI/?branch=master"
           target="_blank"
           rel="noreferrer"
           className="div4"
         >
-          <img
-            src="https://img.shields.io/badge/9,6-9,6?style=for-the-badge&logo=scrutinizerci&label=Scrutinizer&labelColor=282a3&color=%23008000"
-            alt="Scrutinizer Code Quality"
-          />
+          <img src="/src/assets/img/img3.svg" alt="Scrutinizer Code Quality" />
         </a>
       </div>
       <h2>Introduction</h2>
