@@ -16,7 +16,7 @@ const LoadingScreen = () => {
   }, [])
 
   return (
-    <div className="loading-container">
+    <div className="loading-container h-screen">
       <div className="loader">
         <Spinner label="Loading..." color="primary" size="lg" />
       </div>
