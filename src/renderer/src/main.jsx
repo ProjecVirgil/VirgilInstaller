@@ -18,14 +18,12 @@ const router = createBrowserRouter([
 const Root = () => {
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    setTimeout(() => setLoading(false), 3000) // milliseconds
-  }, [])
-
   return (
     <React.StrictMode>
       <NextUIProvider>
-        <main className="virgil-theme">{loading ? <LoadingScreen /> : <App />}</main>
+        <main className="virgil-theme">
+          {loading ? <LoadingScreen setIsLoading={setLoading} /> : <App />}
+        </main>
       </NextUIProvider>
     </React.StrictMode>
   )
