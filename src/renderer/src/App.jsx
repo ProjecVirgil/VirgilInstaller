@@ -167,10 +167,8 @@ function App() {
   }, [])
 
   if (loading) {
-    console.log("Loading")
     return <LoadingScreen />
   } else {
-    console.log("MAIn")
     return (
       <div className="h-screen w-[100%]">
         <NavbarMain></NavbarMain>
