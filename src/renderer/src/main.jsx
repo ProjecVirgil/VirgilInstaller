@@ -1,25 +1,34 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import ReactDOM from 'react-dom/client'
 import './assets/index.css'
 import { NextUIProvider } from '@nextui-org/react'
 import App from './App'
+import LoadingScreen from './components/LoadingScreen'
 import { createBrowserRouter } from 'react-router-dom'
-//import { closeWindow } from 'electron';
+// import { closeWindow } from 'electron';
 
 const router = createBrowserRouter([
   // Add your routes here, e.g.,
   {
     path: '/',
-    element: <App />,
+    element: <App />
   }
 ])
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <NextUIProvider>
-      <main className="virgil-theme">
-        <App />
-      </main>
-    </NextUIProvider>
-  </React.StrictMode>
-)
+const Root = () => {
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    setTimeout(() => setLoading(false), 3000) // milliseconds
+  }, [])
+
+  return (
+    <React.StrictMode>
+      <NextUIProvider>
+        <main className="virgil-theme">{loading ? <LoadingScreen /> : <App />}</main>
+      </NextUIProvider>
+    </React.StrictMode>
+  )
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Root />)

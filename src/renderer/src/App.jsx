@@ -1,4 +1,3 @@
-//import nomeclassecomponente from './components/nomefile'
 import { useState, useEffect } from 'react'
 import NavbarMain from './components/NavbarMain'
 import Main from './components/Main'
@@ -12,7 +11,6 @@ import StepConnector, { stepConnectorClasses } from '@mui/material/StepConnector
 import Check from '@mui/icons-material/Check'
 import { styled } from '@mui/material/styles'
 import BStep from './components/BStep'
-import LoadingScreen from './components/LoadingScreen'
 
 if (window.api) {
   console.log('Preload APIs are available')
@@ -162,40 +160,32 @@ function App() {
     completed: PropTypes.bool
   }
 
-  useEffect(() => {
-    setTimeout(() => setLoading(false), 3000) // milliseconds
-  }, [])
-
-  if (loading) {
-    return <LoadingScreen />
-  } else {
-    return (
-      <div className="h-screen w-[100%]">
-        <NavbarMain></NavbarMain>
-        <Box sx={{ width: '80%', marginX: '50px', marginY: '6px' }}>
-          <Stepper activeStep={activeStep} sx={stepStyle} connector={<QontoConnector />}>
-            {steps.map((label) => (
-              <Step key={label}>
-                <StepLabel StepIconComponent={QontoStepIcon}>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
-        </Box>
-        {activeStep !== steps.length ? (
-          <Main step={activeStep}></Main>
-        ) : (
-          <BStep label="PAGINA DI FINE"></BStep>
-        )}
-        <DivBStep
-          nextLabel={activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-          prevLabel="Prev"
-          handleBack={handleBack}
-          handleNext={handleNext}
-          isVisible={activeStep !== steps.length}
-        ></DivBStep>
-      </div>
-    )
-  }
+  return (
+    <div className="h-screen w-[100%]">
+      <NavbarMain></NavbarMain>
+      <Box sx={{ width: '80%', marginX: '50px', marginY: '6px' }}>
+        <Stepper activeStep={activeStep} sx={stepStyle} connector={<QontoConnector />}>
+          {steps.map((label) => (
+            <Step key={label}>
+              <StepLabel StepIconComponent={QontoStepIcon}>{label}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+      </Box>
+      {activeStep !== steps.length ? (
+        <Main step={activeStep}></Main>
+      ) : (
+        <BStep label="PAGINA DI FINE"></BStep>
+      )}
+      <DivBStep
+        nextLabel={activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+        prevLabel="Prev"
+        handleBack={handleBack}
+        handleNext={handleNext}
+        isVisible={activeStep !== steps.length}
+      ></DivBStep>
+    </div>
+  )
 }
 
 export default App
