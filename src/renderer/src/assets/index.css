@@ -224,7 +224,7 @@ body {
 /* Stile del thumb della scrollbar */
 ::-webkit-scrollbar-thumb {
   background: #a58ef5;
-  border-radius: 5px;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -235,4 +235,6 @@ body {
 ::-webkit-scrollbar-track {
   background: rgba(29, 30, 39,.6);
   border-radius: 5px;
+  margin-top:20px;
+  margin-bottom:20px
 }
