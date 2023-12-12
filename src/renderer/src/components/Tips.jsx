@@ -21,7 +21,13 @@ function Tips(props) {
       >
         <QuestionMarkIcon width="12px" height="12px" />
       </Button>
-      <Modal backdrop="blur" className="bg-[#1d1e27]" isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal
+        placement="center"
+        backdrop="blur"
+        className="bg-[#1d1e27]"
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+      >
         <ModalContent>
           {(onClose) => (
             <>
