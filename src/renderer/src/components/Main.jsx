@@ -2,24 +2,24 @@ import Welcome from './WelcomeScene'
 import { ScrollShadow } from '@nextui-org/react'
 import License from './LicenseScene'
 import ConfigScene from './ConfigScene'
-import React from 'react'
+import { useRef, useEffect } from 'react'
 
 function Main(props) {
   const step = props.step
-  const scrollRef = React.useRef(null);
+  const scrollRef = useRef(null)
 
   const scrollToBottom = () => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
     }
-  };
+  }
 
-  React.useEffect(() => {
+  useEffect(() => {
     const reminderListener = () => {
-      scrollToBottom();
-    };
-    window.api.receive('reminder', reminderListener);
-  }, []);
+      scrollToBottom()
+    }
+    window.api.receive('reminder', reminderListener)
+  }, [])
 
   const content = () => {
     if (step == 0) {
