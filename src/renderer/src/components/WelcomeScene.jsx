@@ -1,3 +1,8 @@
+import Image1 from '../assets/img/img0.svg'
+import Image2 from '../assets/img/img1.svg'
+import Image3 from '../assets/img/img2.svg'
+import Image4 from '../assets/img/img3.svg'
+
 function Welcome() {
   return (
     <div className="markdown-content">
@@ -6,20 +11,16 @@ function Welcome() {
       </h1>
       <hr />
       <div className="flex  parent">
-        <img src="/src/assets/img/img0.svg" alt="VirgilAI" className="div1" />
-        <img
-          src="/src/assets/img/img1.svg"
-          alt="GitHub commit activity (branch)"
-          className="div2"
-        />
-        <img src="/src/assets/img/img2.svg" alt="GitHub repo size" className="div3" />
+        <img src={Image1} alt="VirgilAI" className="div1" />
+        <img src={Image2} alt="GitHub commit activity (branch)" className="div2" />
+        <img src={Image3} alt="GitHub repo size" className="div3" />
         <a
           href="https://scrutinizer-ci.com/g/Retr0100/VirgilAI/?branch=master"
           target="_blank"
           rel="noreferrer"
           className="div4"
         >
-          <img src="/src/assets/img/img3.svg" alt="Scrutinizer Code Quality" />
+          <img src={Image4} alt="Scrutinizer Code Quality" />
         </a>
       </div>
       <h2>Introduction</h2>
