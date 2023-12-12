@@ -1,18 +1,16 @@
 /* eslint-disable react/no-unescaped-entities */
 import { Checkbox } from '@nextui-org/react'
-import React from 'react'
+import { useState, useEffect } from 'react'
 function License() {
-  const [isSelected, setIsSelected] = React.useState(false)
-  const [showReminder, setShowReminder] = React.useState(false)
+  const [isSelected, setIsSelected] = useState(false)
+  const [showReminder, setShowReminder] = useState(false)
 
-  React.useEffect(() => {
+  useEffect(() => {
     const reminderListener = () => {
       setShowReminder(true)
     }
     window.api.receive('reminder', reminderListener)
   }, [])
-
-
 
   return (
     <div className="License-style">
@@ -1247,21 +1245,24 @@ function License() {
         <a href="https://www.gnu.org/licenses/">https://www.gnu.org/licenses/</a>.
       </p>
       <Checkbox
-        className='check'
+        className="check"
         isSelected={isSelected}
         onValueChange={() => {
           setIsSelected(!isSelected)
           window.api.send('check')
-          if(!isSelected){
+          if (!isSelected) {
             setShowReminder(false)
-          }
-          else{
+          } else {
             setShowReminder(true)
           }
         }}
       >
         {' '}
-        {showReminder?<span className='text-red-600'>First you must accept the conditions</span>:<span>Accept condition</span>}
+        {showReminder ? (
+          <span className="text-red-600">First you must accept the conditions</span>
+        ) : (
+          <span>Accept condition</span>
+        )}
       </Checkbox>
     </div>
   )
