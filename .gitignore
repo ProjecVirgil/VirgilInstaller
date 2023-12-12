@@ -3,3 +3,8 @@ dist
 out
 *.log*
 build
+
+
+#assets
+src/renderer/src/assets/img/*.svg
+
