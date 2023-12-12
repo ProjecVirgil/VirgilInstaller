@@ -180,7 +180,7 @@ function GScene() {
                 )}
               </Button>
             </div>
-            <div className="div2G"></div>
+            <div className="div2G w-[20px]"></div>
           </div>
         </div>
 
@@ -200,7 +200,7 @@ function GScene() {
                 <p className="text-[13px]">Yes</p>
               </Checkbox>
             </div>
-            <div className="div2G">
+            <div className="div2G w-[20px]">
               <Checkbox
                 isSelected={isSelectedG8}
                 onValueChange={() => {
