@@ -154,7 +154,7 @@ function check_if_update(actual, last_version) {
   }
 }
 ipcMain.on('search_update', (event) => {
-  axios.get('https://github.com/ProjecVirgil/VirgilAI/tags').then((response) => {
+  axios.get('https://github.com/ProjecVirgil/VirgilInstaller/tags').then((response) => {
     const $ = cheerio.load(response.data)
     const content = $('body').html()
     const regex = /v\d+\.\d+\.\d+/ //add g for more results
