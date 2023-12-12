@@ -94,3 +94,33 @@ ipcMain.on('open-file-dialog', async (event) => {
     event.sender.send('selected-directory', result.filePaths[0])
   }
 })
+
+const fs = require('fs')
+const axios = require('axios')
+ipcMain.on('downloadImage', (event) => {
+  const imageUrls = [
+    'https://img.shields.io/badge/2%2C1k-2%2C1k?style=for-the-badge&logo=visualstudiocode&label=Lines%20of%20code&labelColor=282a3&color=%23164773',
+    'https://img.shields.io/github/commit-activity/w/Retr0100/VirgilAI?style=for-the-badge&logo=github&labelColor=%23282a3&color=%231B7F79',
+    'https://img.shields.io/github/repo-size/Retr0100/VirgilAI?style=for-the-badge&logo=github&labelColor=%23282a3&color=%23bd93f9',
+    'https://img.shields.io/badge/9,6-9,6?style=for-the-badge&logo=scrutinizerci&label=Scrutinizer&labelColor=282a3&color=%23008000'
+  ]
+
+  for (const [index, url] of imageUrls.entries()) {
+    axios
+      .get(url, { responseType: 'arraybuffer' })
+      .then((response) => {
+        const imageDataBuffer = Buffer.from(response.data, 'binary')
+        fs.writeFileSync(
+          path.join('src', 'renderer', 'src', 'assets', 'img') + '/img' + index + '.svg',
+          imageDataBuffer
+        )
+        event.reply('imageDownloaded', 'Immagine scaricata e salvata con successo!')
+      })
+      .catch((error) => {
+        event.reply(
+          'imageDownloadError',
+          `Errore nel download e salvataggio dell'immagine: ${error.message}`
+        )
+      })
+  }
+})
