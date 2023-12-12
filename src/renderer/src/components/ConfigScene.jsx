@@ -219,7 +219,7 @@ function GScene() {
             <h1 className="subtitle mb-2 w-[130px]">Your config key:</h1>
             <div className="w-5">
               <Tip
-                header="The MOST imporant KEY"
+                header="The MOST important KEY"
                 content={
                   <div>
                     <div className="text-tiny">
