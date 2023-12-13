@@ -2,6 +2,7 @@ import Welcome from './WelcomeScene'
 import { ScrollShadow } from '@nextui-org/react'
 import License from './LicenseScene'
 import ConfigScene from './ConfigScene'
+import InstallationScene from './InstallationScene'
 import { useRef, useEffect } from 'react'
 
 function Main(props) {
@@ -29,7 +30,7 @@ function Main(props) {
     } else if (step == 2) {
       return <ConfigScene></ConfigScene>
     } else if (step == 3) {
-      return <h1>Installazione</h1>
+      return <InstallationScene></InstallationScene>
     }
   }
 
