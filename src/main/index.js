@@ -5,6 +5,7 @@ import icon from '../../resources/icons/icon.png'
 import fs from 'fs'
 import axios from 'axios'
 import cheerio from 'cheerio'
+import { exec } from 'child_process'
 
 let mainWindow
 function createWindow() {
@@ -50,9 +51,6 @@ app.whenReady().then(() => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 
-  // Default open or close DevTools by F12 in development
-  // and ignore CommandOrControl + R in production.
-  // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
@@ -60,14 +58,9 @@ app.whenReady().then(() => {
   createWindow()
 
   app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 })
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
@@ -154,10 +147,9 @@ ipcMain.on('search_update', (event) => {
   axios.get('https://github.com/ProjecVirgil/VirgilInstaller/tags').then((response) => {
     const $ = cheerio.load(response.data)
     const content = $('body').html()
-    const regex = /v\d+\.\d+\.\d+/ //add g for more results
+    const regex = /v\d+\.\d+\.\d+/
     const results = content.match(regex)
-    const last_version = results[0] //last version
-    //let last_version='v2.0.0' test value
+    const last_version = results[0]
     const packageJsonPath = path.join('package.json')
     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'))
     const actual_version = packageJson.version
@@ -165,3 +157,21 @@ ipcMain.on('search_update', (event) => {
     event.sender.send('result_check', to_update)
   })
 })
+
+
+ipcMain.on('runcommand', (event) => {
+  exec('cat .gitignore', (error, stdout) => {
+    if (error) {
+      console.error('exec error: ' + error)
+      event.sender.send('outputcommand', 'Error during the execution of command')
+      return
+    }
+    const formattedOutput = formatOutput(stdout)
+    event.sender.send('outputcommand', formattedOutput)
+  })
+})
+
+function formatOutput(output) {
+  const formattedOutput = output.replace(/\n/g, ' <br> ')
+  return formattedOutput
+}
