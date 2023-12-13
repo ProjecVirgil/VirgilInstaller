@@ -9,6 +9,7 @@ const api = {
   },
   receive: (channel, func) => {
     ipcRenderer.on(channel, (event, ...args) => func(...args))
+    ipcRenderer.removeListener(channel, func)
   },
   removeListener: (channel, func) => {
     ipcRenderer.removeListener(channel, func)
