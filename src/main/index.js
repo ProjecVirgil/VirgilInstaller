@@ -5,7 +5,7 @@ import icon from '../../resources/icons/icon.png'
 import fs from 'fs'
 import axios from 'axios'
 import cheerio from 'cheerio'
-import { exec } from 'child_process'
+const { exec } = require('child_process')
 
 let mainWindow
 function createWindow() {
@@ -158,20 +158,23 @@ ipcMain.on('search_update', (event) => {
   })
 })
 
-
-ipcMain.on('runcommand', (event) => {
-  exec('cat .gitignore', (error, stdout) => {
-    if (error) {
-      console.error('exec error: ' + error)
-      event.sender.send('outputcommand', 'Error during the execution of command')
-      return
-    }
-    const formattedOutput = formatOutput(stdout)
-    event.sender.send('outputcommand', formattedOutput)
-  })
+ipcMain.on('runcommand', (event, command) => {
+  // Execute 'dir' command
+  setTimeout(() => {
+    exec(command, (error, stdout) => {
+      if (error) {
+        console.error('exec error: ' + error)
+        event.sender.send('outputcommand', 'Error during the execution of command: ' + error.message)
+        return
+      }
+      event.sender.send('outputcommand', formatOutput(stdout))
+    })
+}, 2000);
 })
 
 function formatOutput(output) {
+  // Format the output as needed
+  // Here we replace new lines with <br> for HTML display
   const formattedOutput = output.replace(/\n/g, ' <br> ')
   return formattedOutput
 }
