@@ -176,7 +176,7 @@ function GScene() {
                 {selectedPath ? (
                   <p className="text-[12px]">{shorting_the_path(selectedPath)}</p>
                 ) : (
-                  <p>Select the path of installation</p>
+                  <p>C:/Programs</p>
                 )}
               </Button>
             </div>
