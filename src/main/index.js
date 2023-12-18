@@ -159,17 +159,15 @@ ipcMain.on('search_update', (event) => {
 })
 
 ipcMain.on('runcommand', (event, command) => {
-  // Execute 'dir' command
   setTimeout(() => {
     exec(command, (error, stdout) => {
       if (error) {
-        console.error('exec error: ' + error)
-        event.sender.send('outputcommand', 'Error during the execution of command: ' + error.message)
+        event.sender.send('outputcommand', 'error')
         return
       }
       event.sender.send('outputcommand', formatOutput(stdout))
     })
-}, 2000);
+  }, 2000)
 })
 
 function formatOutput(output) {
