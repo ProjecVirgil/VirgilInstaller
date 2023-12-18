@@ -1,20 +1,21 @@
 import { useEffect, useState, useRef } from 'react'
 
-// Supponendo che queste importazioni siano corrette
-import PendingIcon from './PendingIcon'
-import ErrorIcon from '@mui/icons-material/Error'
-import DoneIcon from './DoneIcon'
+import PendingIcon from './Icons/PendingIcon'
+import ErrorIcon from './Icons/ErrorIcons'
+import DoneIcon from './Icons/DoneIcon'
 
-const command_list = ['echo ciao', 'echo mammt']
+const command_list = ['echo ciao', 'echo mammt', 'echo alessia', 'echo wow']
+const tasks_name = ['Installa Alessia', 'Compila Alessia', 'Esegui Alessia', 'Viva Alessia']
 
 function InstallationScene() {
   const outputEndRef = useRef(null)
-  const [list_task, setListTask] = useState([])
+  const [list_task, setListTask] = useState([
+    { status: 0 },
+    { status: 0 },
+    { status: 0 },
+    { status: 0 }
+  ])
   const [currentTaskIndex, setCurrentTaskIndex] = useState(0)
-
-  function addTask() {
-    setListTask((prevLista) => [...prevLista, { status: 0 }])
-  }
 
   function changeStatus(new_status, index) {
     setListTask((prev_list) => {
@@ -25,25 +26,22 @@ function InstallationScene() {
   }
 
   useEffect(() => {
-    // Funzione per gestire l'output del comando
-    const handleOutput = () => {
-      console.log('OUT')
-      changeStatus(2, currentTaskIndex) // Imposta lo stato del task corrente su completato
-      setCurrentTaskIndex((currentIndex) => currentIndex + 1) // Passa al task successivo
+    const handleOutput = (data) => {
+      if (data.includes('error')) {
+        changeStatus(-1, currentTaskIndex);
+      } else {
+        changeStatus(2, currentTaskIndex);
+        setCurrentTaskIndex(currentTaskIndex + 1);
+      }
     }
-
-    // Registra il listener per l'evento di output
-    window.api.receive('outputcommand', handleOutput)
-
-    // Esegue il task corrente
     function runCurrentTask() {
       if (currentTaskIndex < command_list.length) {
-        addTask()
         changeStatus(1, currentTaskIndex)
         window.api.send('runcommand', command_list[currentTaskIndex])
       }
     }
 
+    window.api.receiveOnce('outputcommand', handleOutput)
     runCurrentTask()
   }, [currentTaskIndex])
 
@@ -57,12 +55,17 @@ function InstallationScene() {
               <div>
                 {item.status === 2 ? (
                   <div className="flex">
-                    <p className="mr-2 mb-1">Operazione numero: {index + 1} fatta</p>
+                    <p className="mr-2 mb-1">{tasks_name[index]} done</p>
                     <DoneIcon size="18px" />
+                  </div>
+                ) : item.status === -1 ? (
+                  <div className="flex">
+                    <p className="mr-2 mb-1">{tasks_name[index]} error</p>
+                    <ErrorIcon size="17px" />
                   </div>
                 ) : (
                   <div className="flex">
-                    <p className="mr-2 mb-1">Operazione numero: {index + 1} in attesa</p>
+                    <p className="mr-2 mb-1">{tasks_name[index]} in pending</p>
                     <PendingIcon size="17px" />
                   </div>
                 )}
