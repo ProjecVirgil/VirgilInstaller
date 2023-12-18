@@ -1,4 +1,4 @@
-import QuestionMarkIcon from './QuestionMarkicon'
+import QuestionMarkIcon from './Icons/QuestionMarkicon'
 import {
   Button,
   Modal,
