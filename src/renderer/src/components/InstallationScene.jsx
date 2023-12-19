@@ -1,13 +1,25 @@
 import { useEffect, useState, useRef } from 'react'
 
+import {
+  useDisclosure,
+  Button,
+  Modal, 
+  ModalContent, 
+  ModalHeader, 
+  ModalBody, 
+  ModalFooter
+} from '@nextui-org/react'
+
 import PendingIcon from './Icons/PendingIcon'
 import ErrorIcon from './Icons/ErrorIcons'
 import DoneIcon from './Icons/DoneIcon'
 
-const command_list = ['echo ciao', 'echo mammt', 'echo alessia', 'echo wow']
+const command_list = ['echo ciao', 'echo mammt', 'eco alessia', 'echo wow']
 const tasks_name = ['Installa Alessia', 'Compila Alessia', 'Esegui Alessia', 'Viva Alessia']
 
 function InstallationScene() {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure()
+  const [error,setError] = useState('')
   const outputEndRef = useRef(null)
   const [list_task, setListTask] = useState([
     { status: 0 },
@@ -29,6 +41,8 @@ function InstallationScene() {
     const handleOutput = (data) => {
       if (data.includes('error')) {
         changeStatus(-1, currentTaskIndex);
+        setError(data)
+        onOpen();
       } else {
         changeStatus(2, currentTaskIndex);
         setCurrentTaskIndex(currentTaskIndex + 1);
@@ -75,6 +89,31 @@ function InstallationScene() {
         </ul>
         <div ref={outputEndRef} />
       </div>
+
+
+      <Modal
+        placement="center"
+        backdrop="blur"
+        className="bg-[#1d1e27]"
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">Error in the installation of some component</ModalHeader>
+              <ModalBody>
+                <p>{error}</p>
+              </ModalBody>
+              <ModalFooter>
+                <Button className="bg-[#a58ef5]" variant="dark" onPress={onClose}>
+                  Ok
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </div>
   )
 }
