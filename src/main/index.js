@@ -162,7 +162,7 @@ ipcMain.on('runcommand', (event, command) => {
   setTimeout(() => {
     exec(command, (error, stdout) => {
       if (error) {
-        event.sender.send('outputcommand', 'error')
+        event.sender.send('outputcommand', 'error '+ error)
         return
       }
       event.sender.send('outputcommand', formatOutput(stdout))
@@ -176,3 +176,5 @@ function formatOutput(output) {
   const formattedOutput = output.replace(/\n/g, ' <br> ')
   return formattedOutput
 }
+
+
