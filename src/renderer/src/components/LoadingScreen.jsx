@@ -27,8 +27,8 @@ const LoadingScreen = ({ setIsLoading }) => {
         onOpen()
       }
     }
-    window.api.receive('imageDownloadError', handleDownloadResponse)
-    window.api.receive('result_check', open_modal)
+    window.api.receiveOnce('imageDownloadError', handleDownloadResponse)
+    window.api.receiveOnce('result_check', open_modal)
 
     window.api.send('search_update')
     window.api.send('downloadImage')
