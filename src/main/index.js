@@ -56,6 +56,8 @@ app.whenReady().then(() => {
   })
 
   createWindow()
+  init_config()
+
 
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
@@ -162,7 +164,7 @@ ipcMain.on('runcommand', (event, command) => {
   setTimeout(() => {
     exec(command, (error, stdout) => {
       if (error) {
-        event.sender.send('outputcommand', 'error '+ error)
+        event.sender.send('outputcommand', 'error ' + error)
         return
       }
       event.sender.send('outputcommand', formatOutput(stdout))
@@ -177,4 +179,81 @@ function formatOutput(output) {
   return formattedOutput
 }
 
+ipcMain.on('getJSON', (event, path) => {
+  readAndParseJSONFile(path)
+    .then((jsonData) => {
+      event.reply('gettedJSON', jsonData)
+    })
+    .catch((error) => {
+      console.error(error)
+      //event.reply('gettedJSON', { error: '' })
+    })
+})
 
+function readAndParseJSONFile(filePath) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(filePath, 'utf8', (err, data) => {
+      if (err) {
+        reject(err)
+        return
+      }
+      try {
+        const jsonData = JSON.parse(data)
+        resolve(jsonData)
+      } catch (parseError) {
+        reject(parseError)
+      }
+    })
+  })
+}
+
+function writeJSONToFile(filePath, jsonData) {
+  return new Promise((resolve, reject) => {
+    const dataString = JSON.stringify(jsonData, null, 2)
+    fs.writeFile(filePath, dataString, 'utf8', (err) => {
+      if (err) {
+        reject(err)
+        return
+      }
+      resolve()
+    })
+  })
+}
+
+ipcMain.on('setJSON', (event, data) => {
+  writeJSONToFile(data[0], data[1])
+    .then(() => {
+      event.reply('settedJSON', { status: 'success' })
+    })
+    .catch((error) => {
+      console.error(error)
+      //event.reply('settedJSON', { error: '' })
+    })
+})
+
+function init_config() {
+  const data = {
+    first_start: true,
+    startup: false,
+    specify_interface: false,
+    type_interface: 'N',
+    installation_path: 'C:\\Programs',
+    icon_on_desktop: true,
+    config_key: ''
+  }
+  const jsonData = JSON.stringify(data, null, 2)
+
+  fs.access('config.json', fs.constants.F_OK, (err) => {
+    if (err) {
+      fs.writeFile('config.json', jsonData, 'utf8', function (err) {
+        if (err) {
+          console.log('Si è verificato un errore durante la scrittura del file JSON:', err)
+        } else {
+          console.log('File JSON salvato con successo.')
+        }
+      })
+    } else {
+      console.log('Il file esiste.')
+    }
+  })
+}
