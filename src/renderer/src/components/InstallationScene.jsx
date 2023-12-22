@@ -3,10 +3,10 @@ import { useEffect, useState, useRef } from 'react'
 import {
   useDisclosure,
   Button,
-  Modal, 
-  ModalContent, 
-  ModalHeader, 
-  ModalBody, 
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
   ModalFooter
 } from '@nextui-org/react'
 
@@ -19,7 +19,7 @@ const tasks_name = ['Installa Alessia', 'Compila Alessia', 'Esegui Alessia', 'Vi
 
 function InstallationScene() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
-  const [error,setError] = useState('')
+  const [error, setError] = useState('')
   const outputEndRef = useRef(null)
   const [list_task, setListTask] = useState([
     { status: 0 },
@@ -40,12 +40,12 @@ function InstallationScene() {
   useEffect(() => {
     const handleOutput = (data) => {
       if (data.includes('error')) {
-        changeStatus(-1, currentTaskIndex);
+        changeStatus(-1, currentTaskIndex)
         setError(data)
-        onOpen();
+        onOpen()
       } else {
-        changeStatus(2, currentTaskIndex);
-        setCurrentTaskIndex(currentTaskIndex + 1);
+        changeStatus(2, currentTaskIndex)
+        setCurrentTaskIndex(currentTaskIndex + 1)
       }
     }
     function runCurrentTask() {
@@ -90,7 +90,6 @@ function InstallationScene() {
         <div ref={outputEndRef} />
       </div>
 
-
       <Modal
         placement="center"
         backdrop="blur"
@@ -101,7 +100,9 @@ function InstallationScene() {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">Error in the installation of some component</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">
+                Error in the installation of some component
+              </ModalHeader>
               <ModalBody>
                 <p>{error}</p>
               </ModalBody>
