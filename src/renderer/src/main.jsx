@@ -5,7 +5,8 @@ import { NextUIProvider } from '@nextui-org/react'
 import App from './App'
 import LoadingScreen from './components/LoadingScreen'
 import { createBrowserRouter } from 'react-router-dom'
-// import { closeWindow } from 'electron';
+import { getJSON, setJSON } from './utils/JsonManager'
+import { MainContext } from './context/MainContext'
 
 const router = createBrowserRouter([
   // Add your routes here, e.g.,
@@ -17,15 +18,47 @@ const router = createBrowserRouter([
 
 const Root = () => {
   const [loading, setLoading] = useState(true)
+  const [first_start, setFirstStart] = useState('')
+  const [config, setConfig] = useState(null)
+
+  useEffect(() => {
+    let isMounted = true
+
+    getJSON('config.json')
+      .then((data) => {
+        if (isMounted) {
+          setFirstStart(data.first_start)
+          //data.first_start = false
+          data.first_start = true
+          setJSON('config.json', data)
+          setConfig(data)
+        }
+      })
+      .catch((error) => {
+        console.error('Error during the load of config', error)
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
 
   return (
-    <React.StrictMode>
-      <NextUIProvider>
-        <main className="virgil-theme">
-          {loading ? <LoadingScreen setIsLoading={setLoading} /> : <App />}
-        </main>
-      </NextUIProvider>
-    </React.StrictMode>
+    <MainContext.Provider value={{ config, setConfig }}>
+      <React.StrictMode>
+        <NextUIProvider>
+          <main className="virgil-theme">
+            {loading ? (
+              <LoadingScreen setIsLoading={setLoading} />
+            ) : first_start ? (
+              <App />
+            ) : (
+              <p>CIAO NON FIRST START LOL</p>
+            )}
+          </main>
+        </NextUIProvider>
+      </React.StrictMode>
+    </MainContext.Provider>
   )
 }
 
