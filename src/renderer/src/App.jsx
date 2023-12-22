@@ -42,7 +42,6 @@ const stepStyle = {
 function App() {
   const [activeStep, setActiveStep] = useState(0)
   const [skipped, setSkipped] = useState(new Set())
-  const [loading, setLoading] = useState(true)
 
   const isStepSkipped = (step) => {
     return skipped.has(step)

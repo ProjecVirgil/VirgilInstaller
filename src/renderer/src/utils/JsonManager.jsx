@@ -1,5 +1,5 @@
 export function getJSON(file_path) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const handleJSON = (data) => {
       resolve(data)
     }
@@ -10,7 +10,7 @@ export function getJSON(file_path) {
 }
 
 export function setJSON(file_path, new_data) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const handleJSON = (data) => {
       resolve(data)
     }

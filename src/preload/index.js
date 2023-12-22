@@ -1,7 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
-console.log('Preload script is running')
 // Custom APIs for renderer
 const api = {
   send: (channel, data) => {

@@ -4,17 +4,9 @@ import './assets/index.css'
 import { NextUIProvider } from '@nextui-org/react'
 import App from './App'
 import LoadingScreen from './components/LoadingScreen'
-import { createBrowserRouter } from 'react-router-dom'
 import { getJSON, setJSON } from './utils/JsonManager'
 import { MainContext } from './context/MainContext'
 
-const router = createBrowserRouter([
-  // Add your routes here, e.g.,
-  {
-    path: '/',
-    element: <App />
-  }
-])
 
 const Root = () => {
   const [loading, setLoading] = useState(true)
