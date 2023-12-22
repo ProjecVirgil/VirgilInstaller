@@ -12,12 +12,6 @@ import Check from '@mui/icons-material/Check'
 import { styled } from '@mui/material/styles'
 import BStep from './components/BStep'
 
-if (window.api) {
-  console.log('Preload APIs are available')
-} else {
-  console.log('Preload APIs are not available')
-}
-
 let isSelected = false
 window.api.receive('checked', () => {
   isSelected = !isSelected
