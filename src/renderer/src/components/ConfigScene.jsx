@@ -1,29 +1,82 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
+import { MainContext } from '../context/MainContext'
 import { Button, Snippet, Checkbox } from '@nextui-org/react'
-//import SelectOption from './SelectOptions'
+import { setJSON } from '../utils/JsonManager'
 import Tip from './Tips'
 
 function GScene() {
-  const [isSelectedG1, setIsSelectedG1] = useState(true)
-  const [isSelectedG2, setIsSelectedG2] = useState(false)
-  const [isSelectedG3, setIsSelectedG3] = useState(true)
-  const [isSelectedG4, setIsSelectedG4] = useState(false)
-  const [isSelectedG5, setIsSelectedG5] = useState(true)
-  const [isSelectedG6, setIsSelectedG6] = useState(false)
-  const [isSelectedG7, setIsSelectedG7] = useState(true)
-  const [isSelectedG8, setIsSelectedG8] = useState(false)
+  const { config, setConfig } = useContext(MainContext)
+
+  const [isSelectedG1, setIsSelectedG1] = useState(true) //YES
+  const [isSelectedG2, setIsSelectedG2] = useState(false) //NO
+
+  const [isSelectedG3, setIsSelectedG3] = useState(false) //YES
+  const [isSelectedG4, setIsSelectedG4] = useState(true) //NO
+
+  const [isSelectedG5, setIsSelectedG5] = useState(true) //TEXT
+  const [isSelectedG6, setIsSelectedG6] = useState(false) //VOCAL
+
+  const [isSelectedG7, setIsSelectedG7] = useState(true) //YES
+  const [isSelectedG8, setIsSelectedG8] = useState(false) //NO
 
   const [selectedPath, setSelectedPath] = useState('')
+
+  useEffect(() => {
+    if (config.startup) {
+      setIsSelectedG1(true)
+      setIsSelectedG2(false)
+    } else {
+      setIsSelectedG1(false)
+      setIsSelectedG2(true)
+    }
+
+    if (config.specify_interface) {
+      setIsSelectedG3(true)
+      setIsSelectedG4(false)
+    } else {
+      setIsSelectedG3(false)
+      setIsSelectedG4(true)
+    }
+
+    if (config.installation_path) {
+      setSelectedPath(config.installation_path)
+    }
+
+    if (config.icon_on_desktop) {
+      setIsSelectedG7(true)
+      setIsSelectedG8(false)
+    } else {
+      setIsSelectedG7(false)
+      setIsSelectedG8(true)
+    }
+  }, [])
 
   const selectPath = () => {
     window.api.send('open-file-dialog')
   }
 
   useEffect(() => {
-    window.api.receive('selected-directory', (path) => {
+    if (!isSelectedG3) {
+      setConfig((prevConfig) => ({ ...prevConfig, type_interface: 'N' }))
+    } else {
+      if (isSelectedG5) {
+        setConfig((prevConfig) => ({ ...prevConfig, type_interface: 'T' }))
+      } else if (isSelectedG6) {
+        setConfig((prevConfig) => ({ ...prevConfig, type_interface: 'V' }))
+      }
+    }
+  }, [isSelectedG3])
+
+  useEffect(() => {
+    window.api.receiveOnce('selected-directory', (path) => {
       setSelectedPath(path)
+      setConfig((prevConfig) => ({ ...prevConfig, installation_path: path }))
     })
   }, [])
+
+  useEffect(() => {
+    setJSON('config.json', config)
+  }, [config])
 
   function shorting_the_path(string) {
     if (string.includes('\\')) {
@@ -40,14 +93,13 @@ function GScene() {
       <h1 className="text-center text-[24px] m-3 mt-0"> Initial configuration </h1>
 
       <div className="w-[50%] float-left">
-
         <div className="div_check">
           <div className="flex">
             <h1 className="subtitle mb-2 w-[90px] mr-2">Startup app?</h1>
             <div className="w-5">
               <Tip
                 header="Automatic start-up of Virgil"
-                content="If you enable this option virgilio will start up together with your operating
+                content="If you enable this option Virgil will start up together with your operating
                   system"
               ></Tip>
             </div>
@@ -57,8 +109,9 @@ function GScene() {
               <Checkbox
                 isSelected={isSelectedG1}
                 onValueChange={() => {
-                  setIsSelectedG1(!isSelectedG1)
-                  setIsSelectedG2(!isSelectedG2)
+                  setIsSelectedG1(true)
+                  setIsSelectedG2(false)
+                  setConfig((prevConfig) => ({ ...prevConfig, startup: true }))
                 }}
               >
                 <p className="text-[13px]">Yes</p>
@@ -68,8 +121,9 @@ function GScene() {
               <Checkbox
                 isSelected={isSelectedG2}
                 onValueChange={() => {
-                  setIsSelectedG1(!isSelectedG1)
-                  setIsSelectedG2(!isSelectedG2)
+                  setIsSelectedG1(false)
+                  setIsSelectedG2(true)
+                  setConfig((prevConfig) => ({ ...prevConfig, startup: false }))
                 }}
               >
                 <p className="text-[13px]">No</p>
@@ -94,8 +148,9 @@ function GScene() {
               <Checkbox
                 isSelected={isSelectedG3}
                 onValueChange={() => {
-                  setIsSelectedG3(!isSelectedG3)
-                  setIsSelectedG4(!isSelectedG4)
+                  setIsSelectedG3(true)
+                  setIsSelectedG4(false)
+                  setConfig((prevConfig) => ({ ...prevConfig, specify_interface: true }))
                 }}
               >
                 <p className="text-[13px]">Yes</p>
@@ -105,8 +160,9 @@ function GScene() {
               <Checkbox
                 isSelected={isSelectedG4}
                 onValueChange={() => {
-                  setIsSelectedG3(!isSelectedG3)
-                  setIsSelectedG4(!isSelectedG4)
+                  setIsSelectedG3(false)
+                  setIsSelectedG4(true)
+                  setConfig((prevConfig) => ({ ...prevConfig, specify_interface: false }))
                 }}
               >
                 <p className="text-[13px]">No</p>
@@ -132,8 +188,9 @@ function GScene() {
                 isDisabled={isSelectedG3 ? false : true}
                 isSelected={isSelectedG5}
                 onValueChange={() => {
-                  setIsSelectedG5(!isSelectedG5)
-                  setIsSelectedG6(!isSelectedG6)
+                  setIsSelectedG5(true)
+                  setIsSelectedG6(false)
+                  setConfig((prevConfig) => ({ ...prevConfig, type_interface: 'T' }))
                 }}
               >
                 <p className="text-[13px]">Text</p>
@@ -144,8 +201,9 @@ function GScene() {
                 isDisabled={isSelectedG3 ? false : true}
                 isSelected={isSelectedG6}
                 onValueChange={() => {
-                  setIsSelectedG5(!isSelectedG5)
-                  setIsSelectedG6(!isSelectedG6)
+                  setIsSelectedG5(false)
+                  setIsSelectedG6(true)
+                  setConfig((prevConfig) => ({ ...prevConfig, type_interface: 'V' }))
                 }}
               >
                 <p className="text-[13px]">Vocal</p>
@@ -195,8 +253,9 @@ function GScene() {
               <Checkbox
                 isSelected={isSelectedG7}
                 onValueChange={() => {
-                  setIsSelectedG7(!isSelectedG7)
-                  setIsSelectedG8(!isSelectedG8)
+                  setIsSelectedG7(true)
+                  setIsSelectedG8(false)
+                  setConfig((prevConfig) => ({ ...prevConfig, icon_on_desktop: true }))
                 }}
               >
                 <p className="text-[13px]">Yes</p>
@@ -206,8 +265,9 @@ function GScene() {
               <Checkbox
                 isSelected={isSelectedG8}
                 onValueChange={() => {
-                  setIsSelectedG7(!isSelectedG7)
-                  setIsSelectedG8(!isSelectedG8)
+                  setIsSelectedG7(false)
+                  setIsSelectedG8(true)
+                  setConfig((prevConfig) => ({ ...prevConfig, icon_on_desktop: false }))
                 }}
               >
                 <p className="text-[13px]">No</p>
