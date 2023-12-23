@@ -227,36 +227,54 @@ ipcMain.on('runcommand', (event, command) => {
         'Programs',
         `VirgilAI-${last_version.replace('v', '')}`,
         'depences'
-      )
-      const execCommand = `cd ${path_python} && python-3.11.7-amd64.exe /quiet InstallAllUsers=1 PrependPath=1 && echo Installazione python finita con successo`
+      );
+    
+      const execCommand = `cd ${path_python} && python-3.11.7-amd64.exe /quiet InstallAllUsers=1 PrependPath=1`;
+    
       exec(execCommand, (error, stdout) => {
         if (error) {
-          event.sender.send('outputcommand', 'error ' + error)
-          console.error(error)
+          event.sender.send('outputcommand', 'error ' + error);
+          console.error(error);
+          return;
         }
-        console.log(stdout)
-      })
-      const path_python1 = path.join(
-        'C:',
-        'Users',
-        username,
-        'AppData',
-        'Local',
-        'Programs',
-        `VirgilAI-${last_version.replace('v', '')}`,
-      )
-      const execCommand1 = `cd ${path_python1} && cd setup && pip install -r ./requirements.txt && cd.. && poetry install`
-      exec(execCommand1, (error, stdout) => {
-        if (error) {
-          event.sender.send('outputcommand', 'error ' + error)
-          console.error(error)
-        }
-        console.log(stdout)
-        event.sender.send('outputcommand', formatOutput(stdout))
-      })
-
-    })
-
+        console.log(stdout);
+        
+        // Solo se il primo comando è completato con successo, esegui il secondo
+        const path_python1 = path.join(
+          'C:',
+          'Users',
+          username,
+          'AppData',
+          'Local',
+          'Programs',
+          `VirgilAI-${last_version.replace('v', '')}`,
+        );
+        
+        const execCommand1 = `cd ${path_python1} && cd setup && pip install -r ./requirements.txt`;
+        
+        exec(execCommand1, (error, stdout) => {
+          if (error) {
+            event.sender.send('outputcommand', 'error ' + error);
+            console.error(error);
+            return;
+          }
+          console.log(stdout);
+    
+          // Solo se il secondo comando è completato con successo, esegui il terzo
+          const execCommand2 = `cd ${path_python1} && poetry install`;
+          
+          exec(execCommand2, (error, stdout) => {
+            if (error) {
+              event.sender.send('outputcommand', 'error ' + error);
+              console.error(error);
+              return;
+            }
+            console.log(stdout);
+            event.sender.send('outputcommand', formatOutput(stdout));
+          });
+        });
+      });
+    });
   } else {
     exec(command, (error, stdout) => {
       if (error) {
