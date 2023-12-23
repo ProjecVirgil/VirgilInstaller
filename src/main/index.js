@@ -214,7 +214,7 @@ ipcMain.on('runcommand', (event, command) => {
         .catch((error) => {
           event.sender.send('outputcommand', 'error ' + error)
         })
-      event.sender.send('outputcommand', formatOutput(stdout))
+      event.sender.send('outputcommand', 'COMPLETE')
     })
   } else if (command === 'InsPy') {
     getVersionVirgil().then((last_version) => {
