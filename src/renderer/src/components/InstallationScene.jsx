@@ -14,8 +14,15 @@ import PendingIcon from './Icons/PendingIcon'
 import ErrorIcon from './Icons/ErrorIcons'
 import DoneIcon from './Icons/DoneIcon'
 
-const command_list = ['echo ciao', 'echo mammt', 'eco alessia', 'echo wow']
 const tasks_name = ['Installa Alessia', 'Compila Alessia', 'Esegui Alessia', 'Viva Alessia']
+const command_list = [`InsVir`, 'InsPy', 'echo alessia', 'echo wow']
+
+
+
+
+//
+
+
 
 function InstallationScene() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
