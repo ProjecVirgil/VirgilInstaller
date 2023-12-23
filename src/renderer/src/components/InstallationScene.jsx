@@ -14,15 +14,13 @@ import PendingIcon from './Icons/PendingIcon'
 import ErrorIcon from './Icons/ErrorIcons'
 import DoneIcon from './Icons/DoneIcon'
 
-const tasks_name = ['Installa Alessia', 'Compila Alessia', 'Esegui Alessia', 'Viva Alessia']
-const command_list = [`InsVir`, 'InsPy', 'echo alessia', 'echo wow']
-
-
-
-
-//
-
-
+const tasks_name = [
+  'Installation VirgilAI',
+  'Installation of dependencies',
+  'Setting the configuration',
+  'Create the file for the start'
+]
+const command_list = [`InsVir`, 'InsPy', 'SetCon', 'CreateStartFile']
 
 function InstallationScene() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
