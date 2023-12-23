@@ -192,33 +192,58 @@ async function downloadFile(fileUrl, outputLocationPath) {
   })
 }
 //        if (os.type().includes('Windows_NT')) {
-ipcMain.on('runcommand', (event, command) => {
-  const username = os.userInfo().username
-  if (command === 'InsVir') {
-    getVersionVirgil().then((last_version) => {
-      let path_installation
-      let download_url
-      const filename = `${last_version}.zip`
-      path_installation = path.join(app.getPath('downloads'), filename)
-      download_url = `https://github.com/ProjecVirgil/VirgilAI/archive/refs/tags/${last_version}.zip`
 
-      downloadFile(download_url, path_installation)
-        .then(() => {
-          const outputDir = path.join('C:', 'Users', username, 'AppData', 'Local', 'Programs')
-          extract(path_installation, { dir: outputDir }, function (err) {
-            if (err) {
-              event.sender.send('outputcommand', 'error ' + err)
-            }
-          })
+
+
+function installVirgil(event){
+  const username = os.userInfo().username
+
+  getVersionVirgil().then((last_version) => {
+    let path_installation
+    let download_url
+    const filename = `${last_version}.zip`
+    path_installation = path.join(app.getPath('downloads'), filename)
+    download_url = `https://github.com/ProjecVirgil/VirgilAI/archive/refs/tags/${last_version}.zip`
+
+    downloadFile(download_url, path_installation)
+      .then(() => {
+        const outputDir = path.join('C:', 'Users', username, 'AppData', 'Local', 'Programs')
+        extract(path_installation, { dir: outputDir }, function (err) {
+          if (err) {
+            event.sender.send('outputcommand', 'error ' + err)
+          }
         })
-        .catch((error) => {
-          event.sender.send('outputcommand', 'error ' + error)
-        })
-      event.sender.send('outputcommand', 'COMPLETE')
-    })
-  } else if (command === 'InsPy') {
-    getVersionVirgil().then((last_version) => {
-      const path_python = path.join(
+      })
+      .catch((error) => {
+        event.sender.send('outputcommand', 'error ' + error)
+      })
+    event.sender.send('outputcommand', 'COMPLETE')
+  })
+}
+
+function installDependeces(event){
+  const username = os.userInfo().username
+  getVersionVirgil().then((last_version) => {
+    const path_python = path.join(
+      'C:',
+      'Users',
+      username,
+      'AppData',
+      'Local',
+      'Programs',
+      `VirgilAI-${last_version.replace('v', '')}`,
+      'depences'
+    );
+    const execCommand = `cd ${path_python} && python-3.11.7-amd64.exe /quiet InstallAllUsers=1 PrependPath=1`;
+    exec(execCommand, (error, stdout) => {
+      if (error) {
+        event.sender.send('outputcommand', 'error ' + error);
+        console.error(error);
+        return;
+      }
+      console.log(stdout);
+      // Solo se il primo comando è completato con successo, esegui il secondo
+      const path_python1 = path.join(
         'C:',
         'Users',
         username,
@@ -226,55 +251,37 @@ ipcMain.on('runcommand', (event, command) => {
         'Local',
         'Programs',
         `VirgilAI-${last_version.replace('v', '')}`,
-        'depences'
       );
-    
-      const execCommand = `cd ${path_python} && python-3.11.7-amd64.exe /quiet InstallAllUsers=1 PrependPath=1`;
-    
-      exec(execCommand, (error, stdout) => {
+      const execCommand1 = `cd ${path_python1} && python -m venv virgil-env && .\\virgil-env\\Scripts\\activate.bat && cd setup && pip install -r ./requirements.txt`;
+      exec(execCommand1, (error, stdout) => {
         if (error) {
           event.sender.send('outputcommand', 'error ' + error);
           console.error(error);
           return;
         }
         console.log(stdout);
-        
-        // Solo se il primo comando è completato con successo, esegui il secondo
-        const path_python1 = path.join(
-          'C:',
-          'Users',
-          username,
-          'AppData',
-          'Local',
-          'Programs',
-          `VirgilAI-${last_version.replace('v', '')}`,
-        );
-        
-        const execCommand1 = `cd ${path_python1} && python -m venv virgil-env && .\\virgil-env\\Scripts\\activate.bat && cd setup && pip install -r ./requirements.txt`;
-        
-        exec(execCommand1, (error, stdout) => {
+        const execCommand2 = `cd ${path_python1} && .\\virgil-env\\Scripts\\activate.bat && poetry install`;
+        exec(execCommand2, (error, stdout) => {
           if (error) {
             event.sender.send('outputcommand', 'error ' + error);
             console.error(error);
             return;
           }
           console.log(stdout);
-    
-          // Solo se il secondo comando è completato con successo, esegui il terzo
-          const execCommand2 = `cd ${path_python1} && .\\virgil-env\\Scripts\\activate.bat && poetry install`;
-          
-          exec(execCommand2, (error, stdout) => {
-            if (error) {
-              event.sender.send('outputcommand', 'error ' + error);
-              console.error(error);
-              return;
-            }
-            console.log(stdout);
-            event.sender.send('outputcommand', formatOutput(stdout));
-          });
+          event.sender.send('outputcommand', formatOutput(stdout));
         });
       });
     });
+  });
+}
+
+
+
+ipcMain.on('runcommand', (event, command) => {
+  if (command === 'InsVir') {
+    installVirgil(event)
+  } else if (command === 'InsPy') {
+    installDependeces(event)
   } else {
     exec(command, (error, stdout) => {
       if (error) {
