@@ -242,7 +242,6 @@ function installDependeces(event){
         return;
       }
       console.log(stdout);
-      // Solo se il primo comando è completato con successo, esegui il secondo
       const path_python1 = path.join(
         'C:',
         'Users',
@@ -278,31 +277,23 @@ function installDependeces(event){
 
 
 ipcMain.on('runcommand', (event, command) => {
-  if (command === 'InsVir') {
-    installVirgil(event)
-  } else if (command === 'InsPy') {
-    installDependeces(event)
-  } else {
-    exec(command, (error, stdout) => {
-      if (error) {
-        event.sender.send('outputcommand', 'error ' + error)
-        console.error(error)
-      }
-      console.log(stdout)
-      event.sender.send('outputcommand', formatOutput(stdout))
-    })
-  }
-
-  // execCommand = 'echo ciaoooo'
-  // exec(execCommand, (error, stdout) => {
-  //   if (error) {
-  //     event.sender.send('outputcommand', 'error ' + error)
-  //     console.error(error)
-  //   }
-  //   console.log(stdout)
-  //   event.sender.send('outputcommand', formatOutput(stdout))
-  // })
-})
+  setTimeout(() => {
+    if (command === 'InsVir') {
+      installVirgil(event);
+    } else if (command === 'InsPy') {
+      installDependeces(event);
+    } else {
+      exec(command, (error, stdout) => {
+        if (error) {
+          event.sender.send('outputcommand', 'error ' + error);
+          console.error(error);
+        }
+        console.log(stdout);
+        event.sender.send('outputcommand', formatOutput(stdout));
+      });
+    }
+  }, 1500);
+});
 
 function formatOutput(output) {
   // Format the output as needed
