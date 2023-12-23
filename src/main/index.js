@@ -261,7 +261,7 @@ ipcMain.on('runcommand', (event, command) => {
           console.log(stdout);
     
           // Solo se il secondo comando è completato con successo, esegui il terzo
-          const execCommand2 = `cd ${path_python1} && poetry install`;
+          const execCommand2 = `cd ${path_python1} && .\\virgil-env\\Scripts\\activate.bat && poetry install`;
           
           exec(execCommand2, (error, stdout) => {
             if (error) {
