@@ -250,7 +250,7 @@ ipcMain.on('runcommand', (event, command) => {
           `VirgilAI-${last_version.replace('v', '')}`,
         );
         
-        const execCommand1 = `cd ${path_python1} && cd setup && pip install -r ./requirements.txt`;
+        const execCommand1 = `cd ${path_python1} && python -m venv virgil-env && .\\virgil-env\\Scripts\\activate.bat && cd setup && pip install -r ./requirements.txt`;
         
         exec(execCommand1, (error, stdout) => {
           if (error) {
