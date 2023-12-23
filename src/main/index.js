@@ -228,7 +228,7 @@ ipcMain.on('runcommand', (event, command) => {
         `VirgilAI-${last_version.replace('v', '')}`,
         'depences'
       )
-      const execCommand = `cd ${path_python} && python-3.11.7-amd64.exe /quiet InstallAllUsers=1 PrependPath=1`
+      const execCommand = `cd ${path_python} && python-3.11.7-amd64.exe /quiet InstallAllUsers=1 PrependPath=1 && cd.. && python -m venv virgil-env && poetry install`
       exec(execCommand, (error, stdout) => {
         if (error) {
           event.sender.send('outputcommand', 'error ' + error)
@@ -237,6 +237,15 @@ ipcMain.on('runcommand', (event, command) => {
         console.log(stdout)
         event.sender.send('outputcommand', formatOutput(stdout))
       })
+    })
+  } else {
+    exec(command, (error, stdout) => {
+      if (error) {
+        event.sender.send('outputcommand', 'error ' + error)
+        console.error(error)
+      }
+      console.log(stdout)
+      event.sender.send('outputcommand', formatOutput(stdout))
     })
   }
 
