@@ -4,7 +4,9 @@ import path from 'path'
 import icon from '../../resources/icons/icon.png'
 import fs from 'fs'
 import axios from 'axios'
+import os from 'os'
 import cheerio from 'cheerio'
+import extract from 'extract-zip'
 const { exec } = require('child_process')
 
 let mainWindow
@@ -57,7 +59,6 @@ app.whenReady().then(() => {
 
   createWindow()
   init_config()
-
 
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
@@ -145,6 +146,7 @@ function check_if_update(actual, last_version) {
     }
   }
 }
+
 ipcMain.on('search_update', (event) => {
   axios.get('https://github.com/ProjecVirgil/VirgilInstaller/tags').then((response) => {
     const $ = cheerio.load(response.data)
@@ -160,16 +162,92 @@ ipcMain.on('search_update', (event) => {
   })
 })
 
-ipcMain.on('runcommand', (event, command) => {
-  setTimeout(() => {
-    exec(command, (error, stdout) => {
-      if (error) {
-        event.sender.send('outputcommand', 'error ' + error)
-        return
-      }
-      event.sender.send('outputcommand', formatOutput(stdout))
+function getVersionVirgil() {
+  return axios.get('https://github.com/ProjecVirgil/VirgilAI/tags').then((response) => {
+    const $ = cheerio.load(response.data)
+    const content = $('body').html()
+    const regex = /v\d+\.\d+\.\d+/
+    const results = content.match(regex)
+    if (results && results.length > 0) {
+      return results[0]
+    } else {
+      throw new Error('Version not found')
+    }
+  })
+}
+
+async function downloadFile(fileUrl, outputLocationPath) {
+  const writer = fs.createWriteStream(outputLocationPath)
+
+  return axios({
+    method: 'get',
+    url: fileUrl,
+    responseType: 'stream'
+  }).then((response) => {
+    response.data.pipe(writer)
+    return new Promise((resolve, reject) => {
+      writer.on('finish', resolve)
+      writer.on('error', reject)
     })
-  }, 2000)
+  })
+}
+//        if (os.type().includes('Windows_NT')) {
+ipcMain.on('runcommand', (event, command) => {
+  const username = os.userInfo().username
+  if (command === 'InsVir') {
+    getVersionVirgil().then((last_version) => {
+      let path_installation
+      let download_url
+      const filename = `${last_version}.zip`
+      path_installation = path.join(app.getPath('downloads'), filename)
+      download_url = `https://github.com/ProjecVirgil/VirgilAI/archive/refs/tags/${last_version}.zip`
+
+      downloadFile(download_url, path_installation)
+        .then(() => {
+          const outputDir = path.join('C:', 'Users', username, 'AppData', 'Local', 'Programs')
+          extract(path_installation, { dir: outputDir }, function (err) {
+            if (err) {
+              event.sender.send('outputcommand', 'error ' + err)
+            }
+          })
+        })
+        .catch((error) => {
+          event.sender.send('outputcommand', 'error ' + error)
+        })
+    })
+  } else if (command === 'InsPy') {
+    getVersionVirgil().then((last_version) => {
+      const path_python = path.join(
+        'C:',
+        'Users',
+        username,
+        'AppData',
+        'Local',
+        'Programs',
+        `VirgilAI-${last_version.replace('v', '')}`,
+        'depences'
+      )
+      const execCommand = `cd ${path_python} && python-3.11.7-amd64.exe /quiet InstallAllUsers=1 PrependPath=1`
+      exec(execCommand, (error, stdout) => {
+        if (error) {
+          event.sender.send('outputcommand', 'error ' + error)
+          console.error(error)
+        }
+        console.log(stdout)
+        event.sender.send('outputcommand', formatOutput(stdout))
+      })
+    })
+  }
+
+  // execCommand = 'echo ciaoooo'
+  // exec(execCommand, (error, stdout) => {
+  //   if (error) {
+  //     event.sender.send('outputcommand', 'error ' + error)
+  //     console.error(error)
+  //   }
+  //   console.log(stdout)
+  //   event.sender.send('outputcommand', formatOutput(stdout))
+  // })
 })
 
 function formatOutput(output) {
@@ -237,7 +315,7 @@ function init_config() {
     startup: false,
     specify_interface: false,
     type_interface: 'N',
-    installation_path: 'C:\\Programs',
+    installation_path: 'C:\\Programs', //DA PROVARE POI CON LINUX E ALTRE COSE VARie
     icon_on_desktop: true,
     config_key: ''
   }
