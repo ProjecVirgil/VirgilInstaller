@@ -311,16 +311,17 @@ function createStartFile(event) {
     // Creazione del collegamento (aggiusta questo secondo la libreria che stai usando)
     ws.create(
       `C:\\Users\\${username}\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\VirgilAI.lnk`,
-      filePath
+      { target: filePath, desc: 'VirgilAI start file', icon: 'resources\\icons\\icon.png' }
     )
-    event.send('outputcommand', 'success')
+
+    event.sender.send('outputcommand', 'success')
   })
 }
 
 function setConfig(event) {
   //modifico i valori della config locale dentro al file
   //pyproject (assicurati che io prenda la config ancora cosi dentro virgil)
-  event.send('outputcommand', 'ok')
+  event.sender.send('outputcommand', 'ok')
 }
 
 ipcMain.on('runcommand', (event, command) => {
@@ -338,7 +339,7 @@ ipcMain.on('runcommand', (event, command) => {
       setConfig(event)
       // event.sender.send('outputcommand', 'cioa')
     }
-  }, 1500)
+  }, 3000)
 })
 
 function formatOutput(output) {
