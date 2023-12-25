@@ -311,7 +311,11 @@ function createStartFile(event) {
     // Creazione del collegamento (aggiusta questo secondo la libreria che stai usando)
     ws.create(
       `C:\\Users\\${username}\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\VirgilAI.lnk`,
-      { target: filePath, desc: 'VirgilAI start file', icon: 'resources\\icons\\icon.png' }
+      {
+        target: filePath,
+        desc: 'VirgilAI start file',
+        icon: path.join(path.resolve(__dirname, '..', '..'), 'resources', 'icons', 'icon.png')
+      }
     )
 
     event.sender.send('outputcommand', 'success')
