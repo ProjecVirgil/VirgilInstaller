@@ -94,6 +94,8 @@ ipcMain.on('open-file-dialog', async (event) => {
   }
 })
 
+
+// ---- UTILS LISTENER -----
 ipcMain.on('downloadImage', (event) => {
   const imageUrls = [
     'https://img.shields.io/badge/2%2C1k-2%2C1k?style=for-the-badge&logo=visualstudiocode&label=Lines%20of%20code&labelColor=282a3&color=%23164773',
@@ -119,6 +121,23 @@ ipcMain.on('downloadImage', (event) => {
   }
 })
 
+ipcMain.on('search_update', (event) => {
+  axios.get('https://github.com/ProjecVirgil/VirgilInstaller/tags').then((response) => {
+    const $ = cheerio.load(response.data)
+    const content = $('body').html()
+    const regex = /v\d+\.\d+\.\d+/
+    const results = content.match(regex)
+    const last_version = results[0]
+    const packageJsonPath = path.join('package.json')
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'))
+    const actual_version = packageJson.version
+    const to_update = check_if_update(actual_version, last_version)
+    event.sender.send('result_check', to_update)
+  })
+})
+
+
+// ------ SOME UTILS INTERNAL FUNCTION --------
 function check_if_update(actual, last_version) {
   if (actual === last_version) {
     return false
@@ -147,21 +166,6 @@ function check_if_update(actual, last_version) {
     }
   }
 }
-
-ipcMain.on('search_update', (event) => {
-  axios.get('https://github.com/ProjecVirgil/VirgilInstaller/tags').then((response) => {
-    const $ = cheerio.load(response.data)
-    const content = $('body').html()
-    const regex = /v\d+\.\d+\.\d+/
-    const results = content.match(regex)
-    const last_version = results[0]
-    const packageJsonPath = path.join('package.json')
-    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'))
-    const actual_version = packageJson.version
-    const to_update = check_if_update(actual_version, last_version)
-    event.sender.send('result_check', to_update)
-  })
-})
 
 function getVersionVirgil() {
   return axios.get('https://github.com/ProjecVirgil/VirgilAI/tags').then((response) => {
@@ -192,7 +196,9 @@ async function downloadFile(fileUrl, outputLocationPath) {
     })
   })
 }
-//        if (os.type().includes('Windows_NT')) {
+
+// ------- SETUP --------
+
 
 function installVirgil(event) {
   const username = os.userInfo().username
@@ -266,7 +272,7 @@ function installDependence(event) {
             return
           }
           console.log(stdout)
-          event.sender.send('outputcommand', formatOutput(stdout))
+          event.sender.send('outputcommand', stdout)
         })
       })
     })
@@ -295,11 +301,8 @@ function createStartFile(event) {
   call virgil-env\\Scripts\\activate.bat
   poetry run python launch.py
   `
+    const filePath = path.join(path_directory, 'start.bat')
 
-    // The path of the .bat file
-    const filePath = path.join(path_directory, 'start.bat') // Usa __dirname per la directory corrente
-
-    // Write the content to the .bat file
     fs.writeFile(filePath, batContent, (err) => {
       if (err) {
         console.error('Error writing to .bat file:', err)
@@ -308,7 +311,6 @@ function createStartFile(event) {
       }
     })
 
-    // Creazione del collegamento (aggiusta questo secondo la libreria che stai usando)
     ws.create(
       `C:\\Users\\${username}\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\VirgilAI.lnk`,
       {
@@ -332,26 +334,18 @@ ipcMain.on('runcommand', (event, command) => {
   setTimeout(() => {
     if (command === 'InsVir') {
       installVirgil(event) //WORK
-      // event.sender.send('outputcommand', 'cioa')
     } else if (command === 'InsPy') {
       installDependence(event) //WORK
-      // event.sender.send('outputcommand', 'cioa')
     } else if (command === 'CreateStartFile') {
       createStartFile(event) //WORK
-      // event.sender.send('outputcommand', 'cioa')
     } else if (command === 'SetConf') {
       setConfig(event)
-      // event.sender.send('outputcommand', 'cioa')
     }
   }, 3000)
 })
 
-function formatOutput(output) {
-  // Format the output as needed
-  // Here we replace new lines with <br> for HTML display
-  const formattedOutput = output.replace(/\n/g, ' <br> ')
-  return formattedOutput
-}
+
+// ----- JSON MANAGER -------
 
 ipcMain.on('getJSON', (event, path) => {
   readAndParseJSONFile(path)
@@ -360,7 +354,6 @@ ipcMain.on('getJSON', (event, path) => {
     })
     .catch((error) => {
       console.error(error)
-      //event.reply('gettedJSON', { error: '' })
     })
 })
 
@@ -401,17 +394,24 @@ ipcMain.on('setJSON', (event, data) => {
     })
     .catch((error) => {
       console.error(error)
-      //event.reply('settedJSON', { error: '' })
     })
 })
 
+//------- CONFIG INIT -------
 function init_config() {
   const data = {
     first_start: true,
     startup: false,
     specify_interface: false,
     type_interface: 'N',
-    installation_path: 'C:\\Programs', //DA PROVARE POI CON LINUX E ALTRE COSE VARie
+    installation_path: path.join(
+      'C:',
+      'Users',
+      os.userInfo().username,
+      'AppData',
+      'Local',
+      'Programs'
+    ), //DA PROVARE POI CON LINUX E ALTRE COSE VARie
     icon_on_desktop: true,
     config_key: ''
   }
@@ -421,13 +421,13 @@ function init_config() {
     if (err) {
       fs.writeFile('config.json', jsonData, 'utf8', function (err) {
         if (err) {
-          console.log('Si è verificato un errore durante la scrittura del file JSON:', err)
+          console.log('Error during the write of file json:', err)
         } else {
-          console.log('File JSON salvato con successo.')
+          console.log('File json saved successfully')
         }
       })
     } else {
-      console.log('Il file esiste.')
+      console.log('File json just existed .')
     }
   })
 }
