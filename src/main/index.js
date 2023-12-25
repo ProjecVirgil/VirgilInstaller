@@ -314,7 +314,7 @@ function createStartFile(event) {
       {
         target: filePath,
         desc: 'VirgilAI start file',
-        icon: path.join(path.resolve(__dirname, '..', '..'), 'resources', 'icons', 'icon.png')
+        icon: path.join(path.resolve(__dirname, '..', '..'), 'resources', 'icons', 'icon.ico')
       }
     )
 
