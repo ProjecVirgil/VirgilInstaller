@@ -8,6 +8,7 @@ import os from 'os'
 import cheerio from 'cheerio'
 import extract from 'extract-zip'
 const { exec } = require('child_process')
+const ws = require('windows-shortcuts')
 
 let mainWindow
 function createWindow() {
@@ -193,9 +194,7 @@ async function downloadFile(fileUrl, outputLocationPath) {
 }
 //        if (os.type().includes('Windows_NT')) {
 
-
-
-function installVirgil(event){
+function installVirgil(event) {
   const username = os.userInfo().username
 
   getVersionVirgil().then((last_version) => {
@@ -221,7 +220,7 @@ function installVirgil(event){
   })
 }
 
-function installDependeces(event){
+function installDependence(event) {
   const username = os.userInfo().username
   getVersionVirgil().then((last_version) => {
     const path_python = path.join(
@@ -233,15 +232,15 @@ function installDependeces(event){
       'Programs',
       `VirgilAI-${last_version.replace('v', '')}`,
       'depences'
-    );
-    const execCommand = `cd ${path_python} && python-3.11.7-amd64.exe /quiet InstallAllUsers=1 PrependPath=1`;
+    )
+    const execCommand = `cd ${path_python} && python-3.11.7-amd64.exe /quiet InstallAllUsers=1 PrependPath=1`
     exec(execCommand, (error, stdout) => {
       if (error) {
-        event.sender.send('outputcommand', 'error ' + error);
-        console.error(error);
-        return;
+        event.sender.send('outputcommand', 'error ' + error)
+        console.error(error)
+        return
       }
-      console.log(stdout);
+      console.log(stdout)
       const path_python1 = path.join(
         'C:',
         'Users',
@@ -249,51 +248,98 @@ function installDependeces(event){
         'AppData',
         'Local',
         'Programs',
-        `VirgilAI-${last_version.replace('v', '')}`,
-      );
-      const execCommand1 = `cd ${path_python1} && python -m venv virgil-env && .\\virgil-env\\Scripts\\activate.bat && cd setup && pip install -r ./requirements.txt`;
+        `VirgilAI-${last_version.replace('v', '')}`
+      )
+      const execCommand1 = `cd ${path_python1} && python -m venv virgil-env && .\\virgil-env\\Scripts\\activate.bat && cd setup && pip install -r ./requirements.txt`
       exec(execCommand1, (error, stdout) => {
         if (error) {
-          event.sender.send('outputcommand', 'error ' + error);
-          console.error(error);
-          return;
+          event.sender.send('outputcommand', 'error ' + error)
+          console.error(error)
+          return
         }
-        console.log(stdout);
-        const execCommand2 = `cd ${path_python1} && .\\virgil-env\\Scripts\\activate.bat && poetry install`;
+        console.log(stdout)
+        const execCommand2 = `cd ${path_python1} && .\\virgil-env\\Scripts\\activate.bat && poetry install`
         exec(execCommand2, (error, stdout) => {
           if (error) {
-            event.sender.send('outputcommand', 'error ' + error);
-            console.error(error);
-            return;
+            event.sender.send('outputcommand', 'error ' + error)
+            console.error(error)
+            return
           }
-          console.log(stdout);
-          event.sender.send('outputcommand', formatOutput(stdout));
-        });
-      });
-    });
-  });
+          console.log(stdout)
+          event.sender.send('outputcommand', formatOutput(stdout))
+        })
+      })
+    })
+  })
 }
 
+function createStartFile(event) {
+  //creo il file bat/bash nella stessa cartella di virgilio
+  //creo il collegamento poi con icon e tutto
 
+  getVersionVirgil().then((last_version) => {
+    const username = os.userInfo().username
+    const path_directory = path.join(
+      'C:',
+      'Users',
+      username,
+      'AppData',
+      'Local',
+      'Programs',
+      `VirgilAI-${last_version.replace('v', '')}`
+    )
+
+    let batContent = `
+  @echo off
+  cd ${path_directory}
+  call virgil-env\\Scripts\\activate.bat
+  poetry run python launch.py
+  `
+
+    // The path of the .bat file
+    const filePath = path.join(path_directory, 'start.bat') // Usa __dirname per la directory corrente
+
+    // Write the content to the .bat file
+    fs.writeFile(filePath, batContent, (err) => {
+      if (err) {
+        console.error('Error writing to .bat file:', err)
+      } else {
+        console.log('.bat file created successfully')
+      }
+    })
+
+    // Creazione del collegamento (aggiusta questo secondo la libreria che stai usando)
+    ws.create(
+      `C:\\Users\\${username}\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\VirgilAI.lnk`,
+      filePath
+    )
+    event.send('outputcommand', 'success')
+  })
+}
+
+function setConfig(event) {
+  //modifico i valori della config locale dentro al file
+  //pyproject (assicurati che io prenda la config ancora cosi dentro virgil)
+  event.send('outputcommand', 'ok')
+}
 
 ipcMain.on('runcommand', (event, command) => {
   setTimeout(() => {
     if (command === 'InsVir') {
-      installVirgil(event);
+      installVirgil(event) //WORK
+      // event.sender.send('outputcommand', 'cioa')
     } else if (command === 'InsPy') {
-      installDependeces(event);
-    } else {
-      exec(command, (error, stdout) => {
-        if (error) {
-          event.sender.send('outputcommand', 'error ' + error);
-          console.error(error);
-        }
-        console.log(stdout);
-        event.sender.send('outputcommand', formatOutput(stdout));
-      });
+      installDependence(event) //WORK
+      // event.sender.send('outputcommand', 'cioa')
+    } else if (command === 'CreateStartFile') {
+      createStartFile(event) //WORK
+      // event.sender.send('outputcommand', 'cioa')
+    } else if (command === 'SetConf') {
+      setConfig(event)
+      // event.sender.send('outputcommand', 'cioa')
     }
-  }, 1500);
-});
+  }, 1500)
+})
 
 function formatOutput(output) {
   // Format the output as needed
