@@ -20,7 +20,7 @@ const tasks_name = [
   'Setting the configuration',
   'Create the file for the start'
 ]
-const command_list = [`InsVir`, 'InsPy', 'SetCon', 'CreateStartFile']
+const command_list = [`InsVir`, 'InsPy', 'CreateStartFile', 'SetConf']
 
 function InstallationScene() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
