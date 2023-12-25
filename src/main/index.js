@@ -94,7 +94,6 @@ ipcMain.on('open-file-dialog', async (event) => {
   }
 })
 
-
 // ---- UTILS LISTENER -----
 ipcMain.on('downloadImage', (event) => {
   const imageUrls = [
@@ -135,7 +134,6 @@ ipcMain.on('search_update', (event) => {
     event.sender.send('result_check', to_update)
   })
 })
-
 
 // ------ SOME UTILS INTERNAL FUNCTION --------
 function check_if_update(actual, last_version) {
@@ -199,7 +197,6 @@ async function downloadFile(fileUrl, outputLocationPath) {
 
 // ------- SETUP --------
 
-
 function installVirgil(event) {
   const username = os.userInfo().username
 
@@ -226,28 +223,23 @@ function installVirgil(event) {
   })
 }
 
+function execCommand(command) {
+  return new Promise((resolve, reject) => {
+    exec(command, (error, stdout) => {
+      if (error) {
+        reject(error)
+      } else {
+        resolve(stdout)
+      }
+    })
+  })
+}
+
 function installDependence(event) {
   const username = os.userInfo().username
-  getVersionVirgil().then((last_version) => {
-    const path_python = path.join(
-      'C:',
-      'Users',
-      username,
-      'AppData',
-      'Local',
-      'Programs',
-      `VirgilAI-${last_version.replace('v', '')}`,
-      'depences'
-    )
-    const execCommand = `cd ${path_python} && python-3.11.7-amd64.exe /quiet InstallAllUsers=1 PrependPath=1`
-    exec(execCommand, (error, stdout) => {
-      if (error) {
-        event.sender.send('outputcommand', 'error ' + error)
-        console.error(error)
-        return
-      }
-      console.log(stdout)
-      const path_python1 = path.join(
+  getVersionVirgil().then(async (last_version) => {
+    try {
+      const baseDir = path.join(
         'C:',
         'Users',
         username,
@@ -256,26 +248,32 @@ function installDependence(event) {
         'Programs',
         `VirgilAI-${last_version.replace('v', '')}`
       )
-      const execCommand1 = `cd ${path_python1} && python -m venv virgil-env && .\\virgil-env\\Scripts\\activate.bat && cd setup && pip install -r ./requirements.txt`
-      exec(execCommand1, (error, stdout) => {
-        if (error) {
-          event.sender.send('outputcommand', 'error ' + error)
-          console.error(error)
-          return
-        }
-        console.log(stdout)
-        const execCommand2 = `cd ${path_python1} && .\\virgil-env\\Scripts\\activate.bat && poetry install`
-        exec(execCommand2, (error, stdout) => {
-          if (error) {
-            event.sender.send('outputcommand', 'error ' + error)
-            console.error(error)
-            return
-          }
-          console.log(stdout)
-          event.sender.send('outputcommand', stdout)
-        })
-      })
-    })
+
+      // Install Python
+      const pathPython = path.join(baseDir, 'depences') //I KNOW IS WRITE WRONG
+      let stdout = await execCommand(
+        `cd ${pathPython} && python-3.11.7-amd64.exe /quiet InstallAllUsers=1 PrependPath=1`
+      )
+      console.log(stdout)
+
+      // Setup Python environment
+      const pathPythonEnv = path.join(baseDir)
+      stdout = await execCommand(
+        `cd ${pathPythonEnv} && python -m venv virgil-env && .\\virgil-env\\Scripts\\activate.bat && cd setup && pip install -r ./requirements.txt`
+      )
+      console.log(stdout)
+
+      // Install Poetry dependencies
+      stdout = await execCommand(
+        `cd ${pathPythonEnv} && .\\virgil-env\\Scripts\\activate.bat && poetry install`
+      )
+      console.log(stdout)
+
+      event.sender.send('outputcommand', stdout)
+    } catch (error) {
+      event.sender.send('outputcommand', 'error ' + error)
+      console.error(error)
+    }
   })
 }
 
@@ -343,7 +341,6 @@ ipcMain.on('runcommand', (event, command) => {
     }
   }, 3000)
 })
-
 
 // ----- JSON MANAGER -------
 
