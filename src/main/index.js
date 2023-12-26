@@ -7,6 +7,7 @@ import axios from 'axios'
 import os from 'os'
 import cheerio from 'cheerio'
 import extract from 'extract-zip'
+const toml = require('@iarna/toml')
 const { exec } = require('child_process')
 const ws = require('windows-shortcuts')
 
@@ -94,7 +95,7 @@ ipcMain.on('open-file-dialog', async (event) => {
   }
 })
 
-// ---- UTILS LISTENER -----
+// *  ---- UTILS LISTENER -----
 ipcMain.on('downloadImage', (event) => {
   const imageUrls = [
     'https://img.shields.io/badge/2%2C1k-2%2C1k?style=for-the-badge&logo=visualstudiocode&label=Lines%20of%20code&labelColor=282a3&color=%23164773',
@@ -135,7 +136,7 @@ ipcMain.on('search_update', (event) => {
   })
 })
 
-// ------ SOME UTILS INTERNAL FUNCTION --------
+// * ------ SOME UTILS INTERNAL FUNCTION --------
 function check_if_update(actual, last_version) {
   if (actual === last_version) {
     return false
@@ -195,7 +196,59 @@ async function downloadFile(fileUrl, outputLocationPath) {
   })
 }
 
-// ------- SETUP --------
+function modifyTomlFile(filePath, modifications) {
+  fs.readFile(filePath, 'utf8', (readErr, data) => {
+    if (readErr) {
+      console.error('Errore durante la lettura del file:', readErr)
+      return
+    }
+
+    try {
+      let config = toml.parse(data)
+
+      // Assicurati che le sezioni esistano
+      if (!config.tool) {
+        config.tool = {}
+      }
+      if (!config.tool.config_system) {
+        config.tool.config_system = {}
+      }
+
+      // Applica le modifiche alla sezione specifica
+      Object.keys(modifications).forEach((key) => {
+        config.tool.config_system[key] = modifications[key]
+      })
+
+      console.log(config.tool.config_system)
+
+      // Riscrive l'intero file TOML con le modifiche
+      const modifiedToml = toml.stringify(config)
+      fs.writeFile(filePath, modifiedToml, 'utf8', (writeErr) => {
+        if (writeErr) {
+          console.error('Error during the write phase:', writeErr)
+          return
+        }
+        console.log('File TOML modified succesfully.')
+      })
+    } catch (err) {
+      console.error('Error during the analisys or the writing of file', err)
+    }
+  })
+}
+
+function execCommand(command) {
+  return new Promise((resolve, reject) => {
+    exec(command, (error, stdout) => {
+      if (error) {
+        reject(error)
+      } else {
+        resolve(stdout)
+      }
+    })
+  })
+}
+
+// * ------- SETUP --------
 
 function installVirgil(event) {
   const username = os.userInfo().username
@@ -220,18 +273,6 @@ function installVirgil(event) {
         event.sender.send('outputcommand', 'error ' + error)
       })
     event.sender.send('outputcommand', 'COMPLETE')
-  })
-}
-
-function execCommand(command) {
-  return new Promise((resolve, reject) => {
-    exec(command, (error, stdout) => {
-      if (error) {
-        reject(error)
-      } else {
-        resolve(stdout)
-      }
-    })
   })
 }
 
@@ -325,24 +366,112 @@ function createStartFile(event) {
 function setConfig(event) {
   //modifico i valori della config locale dentro al file
   //pyproject (assicurati che io prenda la config ancora cosi dentro virgil)
-  event.sender.send('outputcommand', 'ok')
+
+  getVersionVirgil().then((last_version) => {
+    const username = os.userInfo().username
+    const config = readAndParseJSONFile('config.json')
+    config.then((data) => {
+      //PHASE 1
+      if (data.startup) {
+        const sourcePath = path.join(
+          'C:',
+          'Users',
+          username,
+          'AppData',
+          'Local',
+          'Programs',
+          `VirgilAI-${last_version.replace('v', '')}`,
+          'start.bat'
+        )
+        const destinationPath = path.join(
+          'C:',
+          'Users',
+          username,
+          'AppData',
+          'Roaming',
+          'Microsoft',
+          'Windows',
+          'Start Menu',
+          'Programs',
+          'Startup'
+        )
+        fs.copyFileSync(sourcePath, destinationPath)
+      }
+      //PHASE 2
+      modifyTomlFile(
+        path.join(
+          'C:',
+          'Users',
+          username,
+          'AppData',
+          'Local',
+          'Programs',
+          `VirgilAI-${last_version.replace('v', '')}`,
+          'pyproject.toml'
+        ),
+        { default_start: data.type_interface }
+      )
+      //PHASE 3
+      if (!data.display_console) {
+        const username = os.userInfo().username
+        const path_directory = path.join(
+          'C:',
+          'Users',
+          username,
+          'AppData',
+          'Local',
+          'Programs',
+          `VirgilAI-${last_version.replace('v', '')}`
+        )
+        let batContent = `
+      @echo off
+      cd ${path_directory}
+      call virgil-env\\Scripts\\activate.bat
+      poetry run python launch.pyw
+      `
+        const filePath = path.join(path_directory, 'start.bat')
+
+        fs.writeFile(filePath, batContent, (err) => {
+          if (err) {
+            console.error('Error writing to .bat file:', err)
+          } else {
+            console.log('.bat file created successfully')
+          }
+        })
+
+        fs.rename(
+          path.join(path_directory, 'launch.py'),
+          path.join(path_directory, 'launch.pyw'),
+          (err) => {
+            if (err) {
+              console.error('Error during the renaming of file:', err)
+            } else {
+              console.log('File renamed succesfully')
+            }
+          }
+        )
+      }
+    })
+
+    event.sender.send('outputcommand', 'success')
+  })
 }
 
 ipcMain.on('runcommand', (event, command) => {
   setTimeout(() => {
     if (command === 'InsVir') {
-      installVirgil(event) //WORK
+      // installVirgil(event) //WORK
     } else if (command === 'InsPy') {
-      installDependence(event) //WORK
+      // installDependence(event) //WORK
     } else if (command === 'CreateStartFile') {
-      createStartFile(event) //WORK
+      // createStartFile(event) //WORK
     } else if (command === 'SetConf') {
-      setConfig(event)
+      // setConfig(event)
     }
   }, 3000)
 })
 
-// ----- JSON MANAGER -------
+// * ----- JSON MANAGER -------
 
 ipcMain.on('getJSON', (event, path) => {
   readAndParseJSONFile(path)
@@ -410,6 +539,7 @@ function init_config() {
       'Programs'
     ), //DA PROVARE POI CON LINUX E ALTRE COSE VARie
     icon_on_desktop: true,
+    display_console: true,
     config_key: ''
   }
   const jsonData = JSON.stringify(data, null, 2)
