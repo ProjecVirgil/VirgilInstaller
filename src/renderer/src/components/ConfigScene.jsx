@@ -7,17 +7,25 @@ import Tip from './Tips'
 function GScene() {
   const { config, setConfig } = useContext(MainContext)
 
+  //Startup
   const [isSelectedG1, setIsSelectedG1] = useState(true) //YES
   const [isSelectedG2, setIsSelectedG2] = useState(false) //NO
 
+  //Specify
   const [isSelectedG3, setIsSelectedG3] = useState(false) //YES
   const [isSelectedG4, setIsSelectedG4] = useState(true) //NO
 
+  //Type Interface
   const [isSelectedG5, setIsSelectedG5] = useState(true) //TEXT
   const [isSelectedG6, setIsSelectedG6] = useState(false) //VOCAL
 
+  //Icon on desktop
   const [isSelectedG7, setIsSelectedG7] = useState(true) //YES
   const [isSelectedG8, setIsSelectedG8] = useState(false) //NO
+
+  //Display console
+  const [isSelectedG9, setIsSelectedG9] = useState(true) //YES
+  const [isSelectedG10, setIsSelectedG10] = useState(false) //NO
 
   const [selectedPath, setSelectedPath] = useState('')
 
@@ -163,6 +171,10 @@ function GScene() {
                   setIsSelectedG3(false)
                   setIsSelectedG4(true)
                   setConfig((prevConfig) => ({ ...prevConfig, specify_interface: false }))
+
+                  setConfig((prevConfig) => ({ ...prevConfig, display_console: true }))
+                  setIsSelectedG9(true)
+                  setIsSelectedG10(false)
                 }}
               >
                 <p className="text-[13px]">No</p>
@@ -191,6 +203,9 @@ function GScene() {
                   setIsSelectedG5(true)
                   setIsSelectedG6(false)
                   setConfig((prevConfig) => ({ ...prevConfig, type_interface: 'T' }))
+                  setConfig((prevConfig) => ({ ...prevConfig, display_console: true }))
+                  setIsSelectedG9(true)
+                  setIsSelectedG10(false)
                 }}
               >
                 <p className="text-[13px]">Text</p>
@@ -207,6 +222,48 @@ function GScene() {
                 }}
               >
                 <p className="text-[13px]">Vocal</p>
+              </Checkbox>
+            </div>
+          </div>
+        </div>
+
+        <div className="div_check">
+          <div className="flex">
+            <h1 className="subtitle mb-2 w-[150px] mr-2">Display the console?</h1>
+            <div className="w-5">
+              <Tip
+                header="You can specify if display the console or not"
+                content="In practice it will run Virgilio in the background but this option is only available if the chosen interface is Vocale and if it does not have to be specified at start-up"
+              ></Tip>
+            </div>
+          </div>
+          <div className="parentG">
+            <div className="div1G">
+              <Checkbox
+                isSelected={isSelectedG9}
+                isDisabled={isSelectedG3 && isSelectedG6 ? false : true}
+                onValueChange={() => {
+                  setIsSelectedG9(true)
+                  setIsSelectedG10(false)
+                  setConfig((prevConfig) => ({ ...prevConfig, display_console: true }))
+                }}
+              >
+                <p className="text-[13px]">Yes</p>
+              </Checkbox>
+            </div>
+            <div className="div2G">
+              <Checkbox
+                isSelected={isSelectedG10}
+                isDisabled={isSelectedG3 && isSelectedG6 ? false : true}
+                onValueChange={() => {
+                  if (isSelectedG3 && isSelectedG6) {
+                    setIsSelectedG9(false)
+                    setIsSelectedG10(true)
+                    setConfig((prevConfig) => ({ ...prevConfig, display_console: false }))
+                  }
+                }}
+              >
+                <p className="text-[13px]">No</p>
               </Checkbox>
             </div>
           </div>
