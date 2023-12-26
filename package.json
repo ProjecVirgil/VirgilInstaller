@@ -22,6 +22,7 @@
     "@electron-toolkit/utils": "^2.0.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@iarna/toml": "^2.2.5",
     "@mui/icons-material": "^5.14.19",
     "@mui/material": "^5.14.20",
     "@nextui-org/react": "^2.2.9",
