@@ -354,9 +354,16 @@ async function setConfig(event) {
     //PHASE 1
     if (data.startup) {
       const sourcePath = path.join(
-        data.installation_path,
-        `VirgilAI-${last_version.replace('v', '')}`,
-        'start.bat'
+        'C:',
+        'Users',
+        username,
+        'AppData',
+        'Roaming',
+        'Microsoft',
+        'Windows',
+        'Start Menu',
+        'Programs',
+        'VirgilAI.lnk'
       )
       const destinationPath = path.join(
         'C:',
