@@ -238,7 +238,7 @@ function modifyTomlFile(filePath, modifications) {
 
 function execCommand(command) {
   return new Promise((resolve, reject) => {
-    exec(command, (error, stdout) => {
+    exec(command, { shell: true }, (error, stdout) => {
       if (error) {
         reject(error)
       } else {
@@ -468,7 +468,7 @@ ipcMain.on('runcommand', (event, command) => {
     } else if (command === 'SetConf') {
       setConfig(event)
     }
-  }, 3000)
+  }, 5000)
 })
 
 // * ----- JSON MANAGER -------
