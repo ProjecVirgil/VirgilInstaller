@@ -7,6 +7,7 @@ import axios from 'axios'
 import os from 'os'
 import cheerio from 'cheerio'
 import extract from 'extract-zip'
+
 const toml = require('@iarna/toml')
 const { exec } = require('child_process')
 const ws = require('windows-shortcuts')
@@ -335,7 +336,6 @@ async function createStartFile(event) {
         icon: path.join(path.resolve(__dirname, '..', '..'), 'resources', 'icons', 'icon.ico')
       }
     )
-
     event.sender.send('outputcommand', 'success')
   } catch (err) {
     console.error('Error writing to .bat file:', err)
@@ -454,7 +454,7 @@ async function setConfig(event) {
       @echo off
       cd ${path_directory}
       call virgil-env\\Scripts\\activate.bat
-      poetry run "C:\\Program Files\\python311\\python.exe" launch.py
+      poetry run python launch.py
       `
       const filePath = path.join(path_directory, 'start.bat')
 
@@ -465,18 +465,19 @@ async function setConfig(event) {
           console.log('.bat file created successfully')
         }
       })
-
-      await fs.promises.rename(
-        path.join(path_directory, 'launch.pyw'),
-        path.join(path_directory, 'launch.py'),
-        (err) => {
-          if (err) {
-            console.error('Error during the renaming of file:', err)
-          } else {
-            console.log('File renamed succesfully')
+      if (fs.existsSync(path.join(path_directory, 'launch.pyw'))) {
+        await fs.promises.rename(
+          path.join(path_directory, 'launch.pyw'),
+          path.join(path_directory, 'launch.py'),
+          (err) => {
+            if (err) {
+              console.error('Error during the renaming of file:', err)
+            } else {
+              console.log('File renamed succesfully')
+            }
           }
-        }
-      )
+        )
+      }
     }
 
     if (data.icon_on_desktop) {
@@ -489,10 +490,15 @@ async function setConfig(event) {
       ws.create(`C:\\Users\\${username}\\Desktop\\VirgilAI.lnk`, {
         target: filePath,
         desc: 'VirgilAI start file',
-        icon: path.join(path.resolve(__dirname, '..', '..'), 'resources', 'icons', 'icon.ico')
+        icon: path.join('.', 'resources', 'icons', 'icon.ico')
       })
     } else {
       fs.access('C:\\Users\\${username}\\Desktop\\VirgilAI.lnk', fs.constants.F_OK, (err) => {
+        const path_directory = path.join(
+          data.installation_path,
+          `VirgilAI-${last_version.replace('v', '')}`
+        )
+        const filePath = path.join(path_directory, 'start.bat')
         if (err) {
           console.log('The file dont exist')
         } else {
@@ -521,7 +527,7 @@ ipcMain.on('runcommand', (event, command) => {
       installDependence(event) //WORK
       // event.sender.send('outputcommand', 'success')
     } else if (command === 'CreateStartFile') {
-      // createStartFile(event) //WORK
+      createStartFile(event) //WORK
       // event.sender.send('outputcommand', 'success')
     } else if (command === 'SetConf') {
       setConfig(event) // WORK
@@ -583,7 +589,27 @@ ipcMain.on('setJSON', (event, data) => {
 })
 
 //------- CONFIG INIT -------
-function init_config() {
+
+
+async function createUser() {
+  const url_base = "https://virgilapi-production.up.railway.app" + "/api"
+  const url = `${url_base}/createUser`;
+  try {
+    const response = await axios.put(url, null, { timeout: 5000 });
+    const userCreated = response.data;
+    console.log('User created correctly');
+    return userCreated.userId;
+  } catch (error) {
+    if (error instanceof axios.RequestError) {
+      console.log("I can't establish a connection, check the network");
+    } else {
+      console.log('User not created');
+    }
+    return 'User not created';
+  }
+}
+
+async function init_config() {
   const data = {
     first_start: true,
     startup: false,
@@ -599,7 +625,7 @@ function init_config() {
     ), //DA PROVARE POI CON LINUX E ALTRE COSE VARie
     icon_on_desktop: true,
     display_console: true,
-    config_key: ''
+    key: await createUser()
   }
   const jsonData = JSON.stringify(data, null, 2)
 
