@@ -460,13 +460,13 @@ function setConfig(event) {
 ipcMain.on('runcommand', (event, command) => {
   setTimeout(() => {
     if (command === 'InsVir') {
-      // installVirgil(event) //WORK
+      installVirgil(event) //WORK
     } else if (command === 'InsPy') {
-      // installDependence(event) //WORK
+      installDependence(event) //WORK
     } else if (command === 'CreateStartFile') {
-      // createStartFile(event) //WORK
+      createStartFile(event) //WORK
     } else if (command === 'SetConf') {
-      // setConfig(event)
+      setConfig(event)
     }
   }, 3000)
 })
