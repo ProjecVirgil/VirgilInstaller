@@ -1,11 +1,13 @@
 import { Button } from '@nextui-org/react'
 function BStep(props) {
-  const { label, Isfirst, handle } = props
+  const { label, Isfirst, handle, disabled } = props
 
-  const classes = Isfirst ? 'button mr-[30px]' : 'button mr-[20px]'
+  const margin = Isfirst ? 'mr-[30px]' : 'button mr-[20px]'
+  const classes = disabled ? `button_disabled ${margin}` : `button ${margin}`
+
   return (
     <div className="div-button">
-      <Button className={classes} color="primary" onClick={handle}>
+      <Button disabled={disabled} className={classes} color="primary" onClick={handle}>
         {label}
       </Button>
     </div>
