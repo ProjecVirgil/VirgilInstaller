@@ -28,7 +28,7 @@ function Main(props) {
     } else if (step == 1) {
       return <License></License>
     } else if (step == 2) {
-      return <ConfigScene></ConfigScene>
+      return <ConfigScene label="Initial configuration"></ConfigScene>
     } else if (step == 3) {
       return <InstallationScene></InstallationScene>
     }
