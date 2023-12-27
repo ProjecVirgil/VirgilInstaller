@@ -1,5 +1,5 @@
 appId: net.projectvirgil.app
-productName: VirgilInstaller
+productName: Virgil-Installer
 directories:
   buildResources: build
 files:
