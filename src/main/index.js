@@ -379,6 +379,29 @@ async function setConfig(event) {
         'VirgilAI.lnk'
       )
       fs.copyFileSync(sourcePath, destinationPath)
+    } else {
+      const filePath = path.join(
+        'C:',
+        'Users',
+        username,
+        'AppData',
+        'Roaming',
+        'Microsoft',
+        'Windows',
+        'Start Menu',
+        'Programs',
+        'Startup',
+        'VirgilAI.lnk'
+      )
+      if (fs.existsSync(filePath)) {
+        try {
+          fs.unlinkSync(filePath)
+        } catch (err) {
+          console.error('Error during the remotion of file:', err)
+        }
+      } else {
+        console.log('The file dont exist')
+      }
     }
     //PHASE 2
     modifyTomlFile(
@@ -422,6 +445,38 @@ async function setConfig(event) {
           }
         }
       )
+    } else {
+      const path_directory = path.join(
+        data.installation_path,
+        `VirgilAI-${last_version.replace('v', '')}`
+      )
+      let batContent = `
+      @echo off
+      cd ${path_directory}
+      call virgil-env\\Scripts\\activate.bat
+      poetry run "C:\\Program Files\\python311\\python.exe" launch.py
+      `
+      const filePath = path.join(path_directory, 'start.bat')
+
+      await fs.promises.writeFile(filePath, batContent, (err) => {
+        if (err) {
+          console.error('Error writing to .bat file:', err)
+        } else {
+          console.log('.bat file created successfully')
+        }
+      })
+
+      await fs.promises.rename(
+        path.join(path_directory, 'launch.pyw'),
+        path.join(path_directory, 'launch.py'),
+        (err) => {
+          if (err) {
+            console.error('Error during the renaming of file:', err)
+          } else {
+            console.log('File renamed succesfully')
+          }
+        }
+      )
     }
 
     if (data.icon_on_desktop) {
@@ -436,6 +491,18 @@ async function setConfig(event) {
         desc: 'VirgilAI start file',
         icon: path.join(path.resolve(__dirname, '..', '..'), 'resources', 'icons', 'icon.ico')
       })
+    } else {
+      fs.access('C:\\Users\\${username}\\Desktop\\VirgilAI.lnk', fs.constants.F_OK, (err) => {
+        if (err) {
+          console.log('The file dont exist')
+        } else {
+          fs.unlink(filePath, (err) => {
+            if (err) {
+              console.error('Error during the remotion of  file:', err)
+            }
+          })
+        }
+      })
     }
 
     event.sender.send('outputcommand', 'success')
@@ -449,18 +516,18 @@ ipcMain.on('runcommand', (event, command) => {
   setTimeout(() => {
     if (command === 'InsVir') {
       installVirgil(event) //WORK
-      //event.sender.send('outputcommand', 'success')
+      // event.sender.send('outputcommand', 'success')
     } else if (command === 'InsPy') {
       installDependence(event) //WORK
       // event.sender.send('outputcommand', 'success')
     } else if (command === 'CreateStartFile') {
-      createStartFile(event) //WORK
+      // createStartFile(event) //WORK
       // event.sender.send('outputcommand', 'success')
     } else if (command === 'SetConf') {
-      setConfig(event)
+      setConfig(event) // WORK
       // event.sender.send('outputcommand', 'success')
     }
-  }, 1000)
+  }, 500)
 })
 
 // * ----- JSON MANAGER -------
