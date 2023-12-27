@@ -335,6 +335,7 @@ async function createStartFile(event) {
         icon: path.join(path.resolve(__dirname, '..', '..'), 'resources', 'icons', 'icon.ico')
       }
     )
+
     event.sender.send('outputcommand', 'success')
   } catch (err) {
     console.error('Error writing to .bat file:', err)
@@ -353,16 +354,9 @@ async function setConfig(event) {
     //PHASE 1
     if (data.startup) {
       const sourcePath = path.join(
-        'C:',
-        'Users',
-        username,
-        'AppData',
-        'Roaming',
-        'Microsoft',
-        'Windows',
-        'Start Menu',
-        'Programs',
-        'VirgilAI.lnk'
+        data.installation_path,
+        `VirgilAI-${last_version.replace('v', '')}`,
+        'start.bat'
       )
       const destinationPath = path.join(
         'C:',
