@@ -10,8 +10,7 @@ import PropTypes from 'prop-types'
 import StepConnector, { stepConnectorClasses } from '@mui/material/StepConnector'
 import Check from '@mui/icons-material/Check'
 import { styled } from '@mui/material/styles'
-import BStep from './components/BStep'
-
+import FinishScene from './components/FinishScene'
 let isSelected = false
 window.api.receive('checked', () => {
   isSelected = !isSelected
@@ -175,11 +174,7 @@ function App() {
           ))}
         </Stepper>
       </Box>
-      {activeStep !== steps.length ? (
-        <Main step={activeStep}></Main>
-      ) : (
-        <BStep label="PAGINA DI FINE"></BStep>
-      )}
+      {activeStep !== steps.length ? <Main step={activeStep}></Main> : <FinishScene></FinishScene>}
       <DivBStep
         //PROP CHE RICEVE IL SEGNALE E A SECONDA DEL SEGNALE VEDE SE DISSATIVARE
         isDisable={activeStep === steps.length - 1 ? toDisable : false}
