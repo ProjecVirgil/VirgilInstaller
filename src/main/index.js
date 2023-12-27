@@ -284,7 +284,7 @@ async function installDependence(event) {
 
     // Install Poetry dependencies
     stdout = await execCommand(
-      `cd ${pathPythonEnv} && .\\virgil-env\\Scripts\\activate.bat && poetry install`
+      `cd ${pathPythonEnv} && .\\virgil-env\\Scripts\\activate && poetry install`
     )
 
     event.sender.send('outputcommand', stdout)
@@ -309,7 +309,7 @@ async function createStartFile(event) {
     @echo off
     cd ${path_directory}
     call virgil-env\\Scripts\\activate.bat
-    poetry run "C:\\Program Files\\python311\\python.exe" launch.py
+    poetry run python launch.py
     `
 
     const filePath = path.join(path_directory, 'start.bat')
