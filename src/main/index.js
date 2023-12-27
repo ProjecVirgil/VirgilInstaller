@@ -381,7 +381,7 @@ function setConfig(event) {
       if (!data.display_console) {
         const username = os.userInfo().username
         const path_directory = path.join(
-          data.installation_path,.
+          data.installation_path,
           `VirgilAI-${last_version.replace('v', '')}`
         )
         let batContent = `
@@ -412,17 +412,23 @@ function setConfig(event) {
           }
         )
       }
+
+      if (data.icon_on_desktop) {
+        const path_directory = path.join(
+          data.installation_path,
+          `VirgilAI-${last_version.replace('v', '')}`
+        )
+        const filePath = path.join(path_directory, 'start.bat')
+
+        ws.create(`C:\\Users\\${username}\\Desktop\\VirgilAI.lnk`, {
+          target: filePath,
+          desc: 'VirgilAI start file',
+          icon: path.join(path.resolve(__dirname, '..', '..'), 'resources', 'icons', 'icon.ico')
+        })
+      }
+
+      event.sender.send('outputcommand', 'success')
     })
-
-    if (icon_on_desktop) {
-      ws.create(`C:\\Users\\${username}\\Desktop\\VirgilAI.lnk`, {
-        target: filePath,
-        desc: 'VirgilAI start file',
-        icon: path.join(path.resolve(__dirname, '..', '..'), 'resources', 'icons', 'icon.ico')
-      })
-    }
-
-    event.sender.send('outputcommand', 'success')
   })
 }
 
