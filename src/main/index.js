@@ -252,28 +252,28 @@ function execCommand(command) {
 
 function installVirgil(event) {
   const username = os.userInfo().username
+  let path_installation
+  getVersionVirgil()
+    .then((last_version) => {
+      const filename = `${last_version}.zip`
+      path_installation = path.join(app.getPath('downloads'), filename)
+      const download_url = `https://github.com/ProjecVirgil/VirgilAI/archive/refs/tags/${last_version}.zip`
 
-  getVersionVirgil().then((last_version) => {
-    let path_installation
-    let download_url
-    const filename = `${last_version}.zip`
-    path_installation = path.join(app.getPath('downloads'), filename)
-    download_url = `https://github.com/ProjecVirgil/VirgilAI/archive/refs/tags/${last_version}.zip`
-
-    downloadFile(download_url, path_installation)
-      .then(() => {
-        const outputDir = path.join('C:', 'Users', username, 'AppData', 'Local', 'Programs')
-        extract(path_installation, { dir: outputDir }, function (err) {
-          if (err) {
-            event.sender.send('outputcommand', 'error ' + err)
-          }
-        })
+      return downloadFile(download_url, path_installation)
+    })
+    .then(() => {
+      const outputDir = path.join('C:', 'Users', username, 'AppData', 'Local', 'Programs')
+      extract(path_installation, { dir: outputDir }, function (err) {
+        if (err) {
+          event.sender.send('outputcommand', 'error ' + err)
+        } else {
+          event.sender.send('outputcommand', 'COMPLETE')
+        }
       })
-      .catch((error) => {
-        event.sender.send('outputcommand', 'error ' + error)
-      })
-    event.sender.send('outputcommand', 'COMPLETE')
-  })
+    })
+    .catch((error) => {
+      event.sender.send('outputcommand', 'error ' + error)
+    })
 }
 
 function installDependence(event) {
