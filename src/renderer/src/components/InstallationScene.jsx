@@ -64,6 +64,12 @@ function InstallationScene() {
     runCurrentTask()
   }, [currentTaskIndex])
 
+  useEffect(() => {
+    if (currentTaskIndex == list_task.length) {
+      window.api.send('toDisable', false)
+    }
+  }, [currentTaskIndex])
+
   return (
     <div>
       <h1 className="text-center text-[24px] m-3 mt-0">Installation in progress</h1>
