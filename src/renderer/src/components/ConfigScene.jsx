@@ -4,7 +4,8 @@ import { Button, Snippet, Checkbox } from '@nextui-org/react'
 import { setJSON } from '../utils/JsonManager'
 import Tip from './Tips'
 
-function GScene() {
+function ConfigScene(props) {
+  const { label } = props
   const { config, setConfig } = useContext(MainContext)
 
   //Startup
@@ -98,7 +99,7 @@ function GScene() {
 
   return (
     <div>
-      <h1 className="text-center text-[24px] m-3 mt-0"> Initial configuration </h1>
+      <h1 className="text-center text-[24px] m-3 mt-0"> {label} </h1>
 
       <div className="w-[50%] float-left">
         <div className="div_check">
@@ -367,4 +368,4 @@ function GScene() {
   )
 }
 
-export default GScene
+export default ConfigScene
