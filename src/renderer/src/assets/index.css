@@ -264,3 +264,9 @@ body {
 
 
 }
+
+
+.text-link{
+  color: #a58ef5;
+  text-decoration-line: underline;
+}
