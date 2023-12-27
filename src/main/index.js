@@ -251,29 +251,27 @@ function execCommand(command) {
 // * ------- SETUP --------
 
 function installVirgil(event) {
-  const username = os.userInfo().username
-  let path_installation
-  getVersionVirgil()
-    .then((last_version) => {
-      const filename = `${last_version}.zip`
-      path_installation = path.join(app.getPath('downloads'), filename)
-      const download_url = `https://github.com/ProjecVirgil/VirgilAI/archive/refs/tags/${last_version}.zip`
+  const username = os.userInfo().username;
+  let pathInstallation;
 
-      return downloadFile(download_url, path_installation)
+  getVersionVirgil()
+    .then((lastVersion) => {
+      const filename = `${lastVersion}.zip`;
+      pathInstallation = path.join(app.getPath('downloads'), filename);
+      const downloadUrl = `https://github.com/ProjecVirgil/VirgilAI/archive/refs/tags/${lastVersion}.zip`;
+
+      return downloadFile(downloadUrl, pathInstallation);
     })
     .then(() => {
-      const outputDir = path.join('C:', 'Users', username, 'AppData', 'Local', 'Programs')
-      extract(path_installation, { dir: outputDir }, function (err) {
-        if (err) {
-          event.sender.send('outputcommand', 'error ' + err)
-        } else {
-          event.sender.send('outputcommand', 'COMPLETE')
-        }
-      })
+      const outputDir = path.join('C:', 'Users', username, 'AppData', 'Local', 'Programs');
+      return extract(pathInstallation, { dir: outputDir });
+    })
+    .then(() => {
+      event.sender.send('outputcommand', 'COMPLETE');
     })
     .catch((error) => {
-      event.sender.send('outputcommand', 'error ' + error)
-    })
+      event.sender.send('outputcommand', 'error ' + error.message);
+    });
 }
 
 function installDependence(event) {
