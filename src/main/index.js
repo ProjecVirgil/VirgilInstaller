@@ -233,7 +233,7 @@ function modifyTomlFile(filePath, modifications) {
 
 function execCommand(command) {
   return new Promise((resolve, reject) => {
-    exec(`cmd /c ${command}`, { shell: true }, (error, stdout) => {
+    exec(`cmd /c "${command}"`, { shell: true }, (error, stdout) => {
       if (error) {
         reject(error)
       } else {
