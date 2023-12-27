@@ -206,26 +206,17 @@ function modifyTomlFile(filePath, modifications) {
       console.error('Errore durante la lettura del file:', readErr)
       return
     }
-
     try {
       let config = toml.parse(data)
-
-      // Assicurati che le sezioni esistano
       if (!config.tool) {
         config.tool = {}
       }
       if (!config.tool.config_system) {
         config.tool.config_system = {}
       }
-
-      // Applica le modifiche alla sezione specifica
       Object.keys(modifications).forEach((key) => {
         config.tool.config_system[key] = modifications[key]
       })
-
-      console.log(config.tool.config_system)
-
-      // Riscrive l'intero file TOML con le modifiche
       const modifiedToml = toml.stringify(config)
       fs.writeFile(filePath, modifiedToml, 'utf8', (writeErr) => {
         if (writeErr) {
@@ -255,9 +246,7 @@ function execCommand(command) {
 // * ------- SETUP --------
 
 function installVirgil(event) {
-  const username = os.userInfo().username
   let pathInstallation
-
   getVersionVirgil()
     .then((lastVersion) => {
       const filename = `${lastVersion}.zip`
@@ -267,8 +256,9 @@ function installVirgil(event) {
       return downloadFile(downloadUrl, pathInstallation)
     })
     .then(() => {
-      const outputDir = path.join('C:', 'Users', username, 'AppData', 'Local', 'Programs')
-      return extract(pathInstallation, { dir: outputDir })
+      readAndParseJSONFile('config.json').then((data) => {
+        return extract(pathInstallation, { dir: data.installation_path })
+      })
     })
     .then(() => {
       event.sender.send('outputcommand', 'COMPLETE')
@@ -279,40 +269,29 @@ function installVirgil(event) {
 }
 
 function installDependence(event) {
-  const username = os.userInfo().username
   getVersionVirgil().then(async (last_version) => {
     try {
-      const baseDir = path.join(
-        'C:',
-        'Users',
-        username,
-        'AppData',
-        'Local',
-        'Programs',
-        `VirgilAI-${last_version.replace('v', '')}`
-      )
-
-      // Install Python
-      const pathPython = path.join(baseDir, 'depences') //I KNOW IS WRITE WRONG
-      let stdout = await execCommand(
-        `cd ${pathPython} && python-3.11.7-amd64.exe /quiet InstallAllUsers=1 PrependPath=1`
-      )
-      console.log(stdout)
-
-      // Setup Python environment
-      const pathPythonEnv = path.join(baseDir)
-      stdout = await execCommand(
-        `cd ${pathPythonEnv} && python -m venv virgil-env && .\\virgil-env\\Scripts\\activate.bat && cd setup && pip install -r ./requirements.txt`
-      )
-      console.log(stdout)
-
-      // Install Poetry dependencies
-      stdout = await execCommand(
-        `cd ${pathPythonEnv} && .\\virgil-env\\Scripts\\activate.bat && poetry install`
-      )
-      console.log(stdout)
-
-      event.sender.send('outputcommand', stdout)
+      readAndParseJSONFile('config.json').then(async (data) => {
+        const baseDir = path.join(
+          data.installation_path,
+          `VirgilAI-${last_version.replace('v', '')}`
+        )
+        // Install Python
+        const pathPython = path.join(baseDir, 'depences') //I KNOW IS WRITE WRONG
+        let stdout = await execCommand(
+          `cd ${pathPython} && python-3.11.7-amd64.exe /quiet InstallAllUsers=1 PrependPath=1`
+        )
+        // Setup Python environment
+        const pathPythonEnv = path.join(baseDir)
+        stdout = await execCommand(
+          `cd ${pathPythonEnv} && python -m venv virgil-env && .\\virgil-env\\Scripts\\activate.bat && cd setup && pip install -r ./requirements.txt`
+        )
+        // Install Poetry dependencies
+        stdout = await execCommand(
+          `cd ${pathPythonEnv} && .\\virgil-env\\Scripts\\activate.bat && poetry install`
+        )
+        event.sender.send('outputcommand', stdout)
+      })
     } catch (error) {
       event.sender.send('outputcommand', 'error ' + error)
       console.error(error)
@@ -323,45 +302,40 @@ function installDependence(event) {
 function createStartFile(event) {
   //creo il file bat/bash nella stessa cartella di virgilio
   //creo il collegamento poi con icon e tutto
-
+  const username = os.userInfo().username
   getVersionVirgil().then((last_version) => {
-    const username = os.userInfo().username
-    const path_directory = path.join(
-      'C:',
-      'Users',
-      username,
-      'AppData',
-      'Local',
-      'Programs',
-      `VirgilAI-${last_version.replace('v', '')}`
-    )
+    readAndParseJSONFile('config.json').then((data) => {
+      const path_directory = path.join(
+        data.installation_path,
+        `VirgilAI-${last_version.replace('v', '')}`
+      )
+      let batContent = `
+      @echo off
+      cd ${path_directory}
+      call virgil-env\\Scripts\\activate.bat
+      poetry run python launch.py
+      `
+      const filePath = path.join(path_directory, 'start.bat')
 
-    let batContent = `
-  @echo off
-  cd ${path_directory}
-  call virgil-env\\Scripts\\activate.bat
-  poetry run python launch.py
-  `
-    const filePath = path.join(path_directory, 'start.bat')
+      fs.writeFile(filePath, batContent, (err) => {
+        if (err) {
+          console.error('Error writing to .bat file:', err)
+        } else {
+          console.log('.bat file created successfully')
+        }
+      })
 
-    fs.writeFile(filePath, batContent, (err) => {
-      if (err) {
-        console.error('Error writing to .bat file:', err)
-      } else {
-        console.log('.bat file created successfully')
-      }
+      ws.create(
+        `C:\\Users\\${username}\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\VirgilAI.lnk`,
+        {
+          target: filePath,
+          desc: 'VirgilAI start file',
+          icon: path.join(path.resolve(__dirname, '..', '..'), 'resources', 'icons', 'icon.ico')
+        }
+      )
+
+      event.sender.send('outputcommand', 'success')
     })
-
-    ws.create(
-      `C:\\Users\\${username}\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\VirgilAI.lnk`,
-      {
-        target: filePath,
-        desc: 'VirgilAI start file',
-        icon: path.join(path.resolve(__dirname, '..', '..'), 'resources', 'icons', 'icon.ico')
-      }
-    )
-
-    event.sender.send('outputcommand', 'success')
   })
 }
 
@@ -376,12 +350,7 @@ function setConfig(event) {
       //PHASE 1
       if (data.startup) {
         const sourcePath = path.join(
-          'C:',
-          'Users',
-          username,
-          'AppData',
-          'Local',
-          'Programs',
+          data.installation_path,
           `VirgilAI-${last_version.replace('v', '')}`,
           'start.bat'
         )
@@ -402,12 +371,7 @@ function setConfig(event) {
       //PHASE 2
       modifyTomlFile(
         path.join(
-          'C:',
-          'Users',
-          username,
-          'AppData',
-          'Local',
-          'Programs',
+          data.installation_path,
           `VirgilAI-${last_version.replace('v', '')}`,
           'pyproject.toml'
         ),
@@ -417,12 +381,7 @@ function setConfig(event) {
       if (!data.display_console) {
         const username = os.userInfo().username
         const path_directory = path.join(
-          'C:',
-          'Users',
-          username,
-          'AppData',
-          'Local',
-          'Programs',
+          data.installation_path,.
           `VirgilAI-${last_version.replace('v', '')}`
         )
         let batContent = `
@@ -454,6 +413,14 @@ function setConfig(event) {
         )
       }
     })
+
+    if (icon_on_desktop) {
+      ws.create(`C:\\Users\\${username}\\Desktop\\VirgilAI.lnk`, {
+        target: filePath,
+        desc: 'VirgilAI start file',
+        icon: path.join(path.resolve(__dirname, '..', '..'), 'resources', 'icons', 'icon.ico')
+      })
+    }
 
     event.sender.send('outputcommand', 'success')
   })
