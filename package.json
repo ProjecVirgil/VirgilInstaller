@@ -1,5 +1,5 @@
 {
-  "name": "VirgilInstaller",
+  "name": "Virgil-Installer",
   "version": "0.0.1",
   "description": "An installer for the use of VirgilAI",
   "main": "./out/main/index.js",
