@@ -6,7 +6,7 @@ import App from './App'
 import LoadingScreen from './components/LoadingScreen'
 import { getJSON, setJSON } from './utils/JsonManager'
 import { MainContext } from './context/MainContext'
-
+import ModifyInstallationScene from './components/ModifyInstallationScene'
 
 const Root = () => {
   const [loading, setLoading] = useState(true)
@@ -20,8 +20,7 @@ const Root = () => {
       .then((data) => {
         if (isMounted) {
           setFirstStart(data.first_start)
-          //data.first_start = false
-          data.first_start = true
+          data.first_start = false
           setJSON('config.json', data)
           setConfig(data)
         }
@@ -45,7 +44,7 @@ const Root = () => {
             ) : first_start ? (
               <App />
             ) : (
-              <p>CIAO NON FIRST START LOL</p>
+              <ModifyInstallationScene></ModifyInstallationScene>
             )}
           </main>
         </NextUIProvider>
