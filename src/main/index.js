@@ -357,9 +357,10 @@ async function setConfig(event) {
         'Windows',
         'Start Menu',
         'Programs',
-        'Startup'
+        'Startup',
+        'start.bat'
       )
-      fs.copyFileSync(sourcePath, destinationPath)
+      fs.copyFileSync(sourcePath, destinationPath);
     }
     //PHASE 2
     modifyTomlFile(
@@ -384,7 +385,7 @@ async function setConfig(event) {
       `
       const filePath = path.join(path_directory, 'start.bat')
 
-      fs.writeFile(filePath, batContent, (err) => {
+      await fs.promises.writeFile(filePath, batContent, (err) => {
         if (err) {
           console.error('Error writing to .bat file:', err)
         } else {
@@ -392,7 +393,7 @@ async function setConfig(event) {
         }
       })
 
-      fs.rename(
+      await fs.promises.rename(
         path.join(path_directory, 'launch.py'),
         path.join(path_directory, 'launch.pyw'),
         (err) => {
