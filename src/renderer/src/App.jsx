@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import NavbarMain from './components/NavbarMain'
 import Main from './components/Main'
 import DivBStep from './components/DivBStep'
@@ -41,6 +41,7 @@ const stepStyle = {
 }
 function App() {
   const [activeStep, setActiveStep] = useState(0)
+  const [toDisable, setToDisable] = useState(true)
   const [skipped, setSkipped] = useState(new Set())
 
   const isStepSkipped = (step) => {
@@ -80,6 +81,15 @@ function App() {
       setActiveStep((prevActiveStep) => prevActiveStep - 1)
     }
   }
+
+  useEffect(() => {
+    const handleIndex = (finish) => {
+      if (!finish && activeStep == steps.length - 1) {
+        setToDisable(false)
+      }
+    }
+    window.api.receiveOnce('checkDisable', handleIndex)
+  }, [activeStep])
 
   const QontoConnector = styled(StepConnector)(({ theme }) => ({
     [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -171,6 +181,8 @@ function App() {
         <BStep label="PAGINA DI FINE"></BStep>
       )}
       <DivBStep
+        //PROP CHE RICEVE IL SEGNALE E A SECONDA DEL SEGNALE VEDE SE DISSATIVARE
+        isDisable={activeStep === steps.length - 1 ? toDisable : false}
         nextLabel={activeStep === steps.length - 1 ? 'Finish' : 'Next'}
         prevLabel="Prev"
         handleBack={handleBack}
