@@ -86,6 +86,10 @@ ipcMain.on('check', () => {
   mainWindow.webContents.send('checked')
 })
 
+ipcMain.on('toDisable', (event, finish) => {
+  mainWindow.webContents.send('checkDisable', finish)
+})
+
 ipcMain.on('open-file-dialog', async (event) => {
   const result = await dialog.showOpenDialog(mainWindow, {
     properties: ['openDirectory'] // Usa 'openFile' per file
@@ -251,27 +255,27 @@ function execCommand(command) {
 // * ------- SETUP --------
 
 function installVirgil(event) {
-  const username = os.userInfo().username;
-  let pathInstallation;
+  const username = os.userInfo().username
+  let pathInstallation
 
   getVersionVirgil()
     .then((lastVersion) => {
-      const filename = `${lastVersion}.zip`;
-      pathInstallation = path.join(app.getPath('downloads'), filename);
-      const downloadUrl = `https://github.com/ProjecVirgil/VirgilAI/archive/refs/tags/${lastVersion}.zip`;
+      const filename = `${lastVersion}.zip`
+      pathInstallation = path.join(app.getPath('downloads'), filename)
+      const downloadUrl = `https://github.com/ProjecVirgil/VirgilAI/archive/refs/tags/${lastVersion}.zip`
 
-      return downloadFile(downloadUrl, pathInstallation);
+      return downloadFile(downloadUrl, pathInstallation)
     })
     .then(() => {
-      const outputDir = path.join('C:', 'Users', username, 'AppData', 'Local', 'Programs');
-      return extract(pathInstallation, { dir: outputDir });
+      const outputDir = path.join('C:', 'Users', username, 'AppData', 'Local', 'Programs')
+      return extract(pathInstallation, { dir: outputDir })
     })
     .then(() => {
-      event.sender.send('outputcommand', 'COMPLETE');
+      event.sender.send('outputcommand', 'COMPLETE')
     })
     .catch((error) => {
-      event.sender.send('outputcommand', 'error ' + error.message);
-    });
+      event.sender.send('outputcommand', 'error ' + error.message)
+    })
 }
 
 function installDependence(event) {
@@ -459,14 +463,18 @@ ipcMain.on('runcommand', (event, command) => {
   setTimeout(() => {
     if (command === 'InsVir') {
       installVirgil(event) //WORK
+      //event.sender.send('outputcommand', 'success')
     } else if (command === 'InsPy') {
       installDependence(event) //WORK
+      // event.sender.send('outputcommand', 'success')
     } else if (command === 'CreateStartFile') {
       createStartFile(event) //WORK
+      // event.sender.send('outputcommand', 'success')
     } else if (command === 'SetConf') {
       setConfig(event)
+      // event.sender.send('outputcommand', 'success')
     }
-  }, 5000)
+  }, 1000)
 })
 
 // * ----- JSON MANAGER -------
