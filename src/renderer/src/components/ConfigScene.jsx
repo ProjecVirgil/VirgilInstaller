@@ -277,7 +277,7 @@ function GScene() {
             <div className="w-5">
               <Tip
                 header="The path for the installation of Virgil"
-                content="The default path is C:\Program Files"
+                content="The default path is C:Users\user\AppData\Local\Programs"
               ></Tip>
             </div>
           </div>
