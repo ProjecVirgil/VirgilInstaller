@@ -204,7 +204,7 @@ async function downloadFile(fileUrl, outputLocationPath) {
 function modifyTomlFile(filePath, modifications) {
   fs.readFile(filePath, 'utf8', (readErr, data) => {
     if (readErr) {
-      console.error('Errore durante la lettura del file:', readErr)
+      console.error('Error during writing:', readErr)
       return
     }
     try {
@@ -224,10 +224,10 @@ function modifyTomlFile(filePath, modifications) {
           console.error('Error during the write phase:', writeErr)
           return
         }
-        console.log('File TOML modified succesfully.')
+        console.log('File TOML modified successfully.')
       })
     } catch (err) {
-      console.error('Error during the analisys or the writing of file', err)
+      console.error('Error during the analysis or the writing of file', err)
     }
   })
 }
@@ -272,7 +272,7 @@ async function installDependence(event) {
     const baseDir = path.join(data.installation_path, `VirgilAI-${last_version.replace('v', '')}`)
 
     // Install Python
-    const pathPython = path.join(baseDir, 'depences')
+    const pathPython = path.join(baseDir, 'depences') //TODO CHANGE TO dependencies
     let stdout = await execCommand(
       `cd ${pathPython} && python-3.11.7-amd64.exe /quiet InstallAllUsers=1 PrependPath=1`
     )
@@ -344,9 +344,6 @@ async function createStartFile(event) {
 }
 
 async function setConfig(event) {
-  //modifico i valori della config locale dentro al file
-  //pyproject (assicurati che io prenda la config ancora cosi dentro virgil)
-
   try {
     const username = os.userInfo().username
     const last_version = await getVersionVirgil()
@@ -441,7 +438,7 @@ async function setConfig(event) {
           if (err) {
             console.error('Error during the renaming of file:', err)
           } else {
-            console.log('File renamed succesfully')
+            console.log('File renamed successfully')
           }
         }
       )
@@ -473,7 +470,7 @@ async function setConfig(event) {
             if (err) {
               console.error('Error during the renaming of file:', err)
             } else {
-              console.log('File renamed succesfully')
+              console.log('File renamed successfully')
             }
           }
         )
@@ -590,22 +587,21 @@ ipcMain.on('setJSON', (event, data) => {
 
 //------- CONFIG INIT -------
 
-
 async function createUser() {
-  const url_base = "https://virgilapi-production.up.railway.app" + "/api"
-  const url = `${url_base}/createUser`;
+  const url_base = 'https://virgilapi-production.up.railway.app' + '/api'
+  const url = `${url_base}/createUser`
   try {
-    const response = await axios.put(url, null, { timeout: 5000 });
-    const userCreated = response.data;
-    console.log('User created correctly');
-    return userCreated.userId;
+    const response = await axios.put(url, null, { timeout: 5000 })
+    const userCreated = response.data
+    console.log('User created correctly')
+    return userCreated.userId
   } catch (error) {
     if (error instanceof axios.RequestError) {
-      console.log("I can't establish a connection, check the network");
+      console.log("I can't establish a connection, check the network")
     } else {
-      console.log('User not created');
+      console.log('User not created')
     }
-    return 'User not created';
+    return 'User not created'
   }
 }
 
@@ -622,7 +618,7 @@ async function init_config() {
       'AppData',
       'Local',
       'Programs'
-    ), //DA PROVARE POI CON LINUX E ALTRE COSE VARie
+    ),
     icon_on_desktop: true,
     display_console: true,
     key: await createUser()
