@@ -317,14 +317,24 @@ async function createStartFile(event) {
     await fs.promises.writeFile(filePath, batContent)
 
     ws.create(
-      `C:\\Users\\${username}\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\VirgilAI.lnk`,
+      path.join(
+        'C:',
+        'Users',
+        username,
+        'AppData',
+        'Roaming',
+        'Microsoft',
+        'Windows',
+        'Start Menu',
+        'Programs',
+        'VirgilAI.lnk'
+      ),
       {
         target: filePath,
         desc: 'VirgilAI start file',
         icon: path.join(path.resolve(__dirname, '..', '..'), 'resources', 'icons', 'icon.ico')
       }
     )
-
     event.sender.send('outputcommand', 'success')
   } catch (err) {
     console.error('Error writing to .bat file:', err)
@@ -343,9 +353,16 @@ async function setConfig(event) {
     //PHASE 1
     if (data.startup) {
       const sourcePath = path.join(
-        data.installation_path,
-        `VirgilAI-${last_version.replace('v', '')}`,
-        'start.bat'
+        'C:',
+        'Users',
+        username,
+        'AppData',
+        'Roaming',
+        'Microsoft',
+        'Windows',
+        'Start Menu',
+        'Programs',
+        'VirgilAI.lnk'
       )
       const destinationPath = path.join(
         'C:',
@@ -358,9 +375,9 @@ async function setConfig(event) {
         'Start Menu',
         'Programs',
         'Startup',
-        'start.bat'
+        'VirgilAI.lnk'
       )
-      fs.copyFileSync(sourcePath, destinationPath);
+      fs.copyFileSync(sourcePath, destinationPath)
     }
     //PHASE 2
     modifyTomlFile(
