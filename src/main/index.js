@@ -233,7 +233,7 @@ function modifyTomlFile(filePath, modifications) {
 
 function execCommand(command) {
   return new Promise((resolve, reject) => {
-    exec(`cmd /c "${command}"`, { shell: true }, (error, stdout) => {
+    exec(command}"`, { shell: true }, (error, stdout) => {
       if (error) {
         reject(error)
       } else {
@@ -279,7 +279,7 @@ async function installDependence(event) {
     // Setup Python environment
     const pathPythonEnv = path.join(baseDir)
     stdout = await execCommand(
-      `cd ${pathPythonEnv} && python -m venv virgil-env && .\\virgil-env\\Scripts\\activate.bat && cd setup && pip install -r ./requirements.txt`
+      `cd ${pathPythonEnv} && C:\\Program Files\\Python311\\python.exe -m venv virgil-env && .\\virgil-env\\Scripts\\activate.bat && cd setup && pip install -r ./requirements.txt`
     )
 
     // Install Poetry dependencies
@@ -309,7 +309,7 @@ async function createStartFile(event) {
     @echo off
     cd ${path_directory}
     call virgil-env\\Scripts\\activate.bat
-    poetry run python launch.py
+    poetry run c:\\program files\\python311\\python.exe launch.py
     `
 
     const filePath = path.join(path_directory, 'start.bat')
@@ -380,7 +380,7 @@ async function setConfig(event) {
       @echo off
       cd ${path_directory}
       call virgil-env\\Scripts\\activate.bat
-      poetry run python launch.pyw
+      poetry run c:\\program files\\python311\\python.exe launch.pyw
       `
       const filePath = path.join(path_directory, 'start.bat')
 
