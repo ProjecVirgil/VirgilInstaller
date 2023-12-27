@@ -360,7 +360,7 @@ function ConfigScene(props) {
             </div>
           </div>
           <Snippet color="primary" size="sm" className="w-[100%] text-[10px]">
-            174766dce532f7419fdff60d8ff6574e
+            {config.key}
           </Snippet>
         </div>
       </div>
