@@ -1,6 +1,6 @@
 {
   "name": "Virgil-Installer",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "An installer for the use of VirgilAI",
   "main": "./out/main/index.js",
   "author": "Retr0",
