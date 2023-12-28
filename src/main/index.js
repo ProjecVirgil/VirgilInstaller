@@ -616,27 +616,26 @@ async function createUser() {
 }
 
 async function init_config() {
-  const data = {
-    first_start: true,
-    startup: false,
-    specify_interface: false,
-    type_interface: 'N',
-    installation_path: path.join(
-      'C:',
-      'Users',
-      os.userInfo().username,
-      'AppData',
-      'Local',
-      'Programs'
-    ),
-    icon_on_desktop: true,
-    display_console: true,
-    key: await createUser()
-  }
-  const jsonData = JSON.stringify(data, null, 2)
-
-  fs.access('config.json', fs.constants.F_OK, (err) => {
+  fs.access('config.json', fs.constants.F_OK, async (err) => {
     if (err) {
+      const data = {
+        first_start: true,
+        startup: false,
+        specify_interface: false,
+        type_interface: 'N',
+        installation_path: path.join(
+          'C:',
+          'Users',
+          os.userInfo().username,
+          'AppData',
+          'Local',
+          'Programs'
+        ),
+        icon_on_desktop: true,
+        display_console: true,
+        key: await createUser()
+      }
+      const jsonData = JSON.stringify(data, null, 2)
       fs.writeFile('config.json', jsonData, 'utf8', function (err) {
         if (err) {
           console.log('Error during the write of file json:', err)
