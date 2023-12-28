@@ -148,7 +148,7 @@ function check_if_update(actual, last_version) {
   }
 
   const parse_version_actual = actual
-    .replace('v', '')
+    .replace('', '')
     .split('.')
     .map((str) => parseInt(str, 10))
   const parse_last_version = last_version
@@ -271,7 +271,7 @@ async function installDependence(event) {
     const baseDir = path.join(data.installation_path, `VirgilAI-${last_version.replace('v', '')}`)
 
     // Install Python
-    const pathPython = path.join(baseDir, 'depences') //TODO CHANGE TO dependencies
+    const pathPython = path.join(baseDir, 'setup')
     let stdout = await execCommand(
       `cd ${pathPython} && python-3.11.7-amd64.exe /quiet InstallAllUsers=1 PrependPath=1`
     )
