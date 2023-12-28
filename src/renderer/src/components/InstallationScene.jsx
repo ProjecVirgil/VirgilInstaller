@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
-
 import {
+  Spinner,
   useDisclosure,
   Button,
   Modal,
@@ -81,7 +81,7 @@ function InstallationScene() {
                 {item.status === 2 ? (
                   <div className="flex">
                     <p className="mr-2 mb-1">{tasks_name[index]} done</p>
-                    <DoneIcon size="18px" />
+                    <DoneIcon color="#20b141" size="18px" />
                   </div>
                 ) : item.status === -1 ? (
                   <div className="flex">
@@ -100,7 +100,13 @@ function InstallationScene() {
         </ul>
         <div ref={outputEndRef} />
       </div>
-
+      <div className="flex justify-center">
+        {currentTaskIndex == list_task.length ? (
+          <DoneIcon color="#a58ef5" size="36px" />
+        ) : (
+          <Spinner></Spinner>
+        )}
+      </div>
       <Modal
         placement="center"
         backdrop="blur"
