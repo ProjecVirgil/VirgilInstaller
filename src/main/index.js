@@ -335,7 +335,8 @@ async function createStartFile(event) {
         icon: path.join(
           data.installation_path,
           `VirgilAI-${last_version.replace('v', '')}`,
-          'asset',
+          'assets',
+          'image',
           'icon.ico'
         )
       }
@@ -486,7 +487,8 @@ async function setConfig(event) {
         icon: path.join(
           data.installation_path,
           `VirgilAI-${last_version.replace('v', '')}`,
-          'asset',
+          'assets',
+          'image',
           'icon.ico'
         )
       })
