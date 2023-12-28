@@ -333,7 +333,12 @@ async function createStartFile(event) {
       {
         target: filePath,
         desc: 'VirgilAI start file',
-        icon: path.join(path.resolve(__dirname, '..', '..'), 'resources', 'icons', 'icon.ico')
+        icon: path.join(
+          data.installation_path,
+          `VirgilAI-${last_version.replace('v', '')}`,
+          'asset',
+          'icon.ico'
+        )
       }
     )
     event.sender.send('outputcommand', 'success')
@@ -487,7 +492,12 @@ async function setConfig(event) {
       ws.create(`C:\\Users\\${username}\\Desktop\\VirgilAI.lnk`, {
         target: filePath,
         desc: 'VirgilAI start file',
-        icon: path.join('.', 'resources', 'icons', 'icon.ico')
+        icon: path.join(
+          data.installation_path,
+          `VirgilAI-${last_version.replace('v', '')}`,
+          'asset',
+          'icon.ico'
+        )
       })
     } else {
       fs.access('C:\\Users\\${username}\\Desktop\\VirgilAI.lnk', fs.constants.F_OK, (err) => {
