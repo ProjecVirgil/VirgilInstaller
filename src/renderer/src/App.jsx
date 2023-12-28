@@ -176,7 +176,6 @@ function App() {
       </Box>
       {activeStep !== steps.length ? <Main step={activeStep}></Main> : <FinishScene></FinishScene>}
       <DivBStep
-        //PROP CHE RICEVE IL SEGNALE E A SECONDA DEL SEGNALE VEDE SE DISSATIVARE
         isDisable={activeStep === steps.length - 1 ? toDisable : false}
         nextLabel={activeStep === steps.length - 1 ? 'Finish' : 'Next'}
         prevLabel="Prev"

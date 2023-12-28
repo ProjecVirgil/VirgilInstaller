@@ -14,11 +14,11 @@ const api = {
       ipcRenderer.removeListener(channel, subscription)
     }
   },
-  
+
   receiveOnce: (channel, func) => {
     ipcRenderer.once(channel, (event, ...args) => func(...args))
   },
-  removeAllListeners: (channel, func) => {
+  removeAllListeners: (channel) => {
     ipcRenderer.removeAllListeners(channel)
   }
 }

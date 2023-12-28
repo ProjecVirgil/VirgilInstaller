@@ -17,9 +17,7 @@ const LoadingScreen = ({ setIsLoading }) => {
   const [isOk, setOk] = useState(false)
 
   useEffect(() => {
-    const handleDownloadResponse = (event, message) => {
-      console.log(message)
-    }
+    const handleDownloadResponse = () => {}
 
     const open_modal = (message) => {
       if (message) {

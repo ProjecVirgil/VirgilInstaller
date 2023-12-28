@@ -8,10 +8,10 @@ function DivBStep(props) {
       {isVisible ? (
         <>
           <BStep handle={handleBack} disable={isDisable} label={prevLabel} />
-          <BStep handle={handleNext} disabled={isDisable} label={nextLabel} Isfirst={true} />
+          <BStep handle={handleNext} disabled={isDisable} label={nextLabel} IsFirst={true} />
         </>
       ) : (
-        <BStep handle={() => window.api.send('close')} label="Close" Isfirst={true} />
+        <BStep handle={() => window.api.send('close')} label="Close" IsFirst={true} />
       )}
     </div>
   )

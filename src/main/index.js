@@ -224,7 +224,6 @@ function modifyTomlFile(filePath, modifications) {
           console.error('Error during the write phase:', writeErr)
           return
         }
-        console.log('File TOML modified successfully.')
       })
     } catch (err) {
       console.error('Error during the analysis or the writing of file', err)
@@ -431,8 +430,6 @@ async function setConfig(event) {
       await fs.promises.writeFile(filePath, batContent, (err) => {
         if (err) {
           console.error('Error writing to .bat file:', err)
-        } else {
-          console.log('.bat file created successfully')
         }
       })
 
@@ -442,8 +439,6 @@ async function setConfig(event) {
         (err) => {
           if (err) {
             console.error('Error during the renaming of file:', err)
-          } else {
-            console.log('File renamed successfully')
           }
         }
       )
@@ -463,8 +458,6 @@ async function setConfig(event) {
       await fs.promises.writeFile(filePath, batContent, (err) => {
         if (err) {
           console.error('Error writing to .bat file:', err)
-        } else {
-          console.log('.bat file created successfully')
         }
       })
       if (fs.existsSync(path.join(path_directory, 'launch.pyw'))) {
@@ -474,8 +467,6 @@ async function setConfig(event) {
           (err) => {
             if (err) {
               console.error('Error during the renaming of file:', err)
-            } else {
-              console.log('File renamed successfully')
             }
           }
         )
@@ -603,13 +594,12 @@ async function createUser() {
   try {
     const response = await axios.put(url, null, { timeout: 5000 })
     const userCreated = response.data
-    console.log('User created correctly')
     return userCreated.userId
   } catch (error) {
     if (error instanceof axios.RequestError) {
-      console.log("I can't establish a connection, check the network")
+      console.error("I can't establish a connection, check the network")
     } else {
-      console.log('User not created')
+      console.error('User not created')
     }
     return 'User not created'
   }
@@ -639,12 +629,8 @@ async function init_config() {
       fs.writeFile('config.json', jsonData, 'utf8', function (err) {
         if (err) {
           console.log('Error during the write of file json:', err)
-        } else {
-          console.log('File json saved successfully')
         }
       })
-    } else {
-      console.log('File json just existed .')
     }
   })
 }

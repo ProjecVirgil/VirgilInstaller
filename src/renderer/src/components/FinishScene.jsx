@@ -3,7 +3,7 @@ import gif from '../assets/img/giphy.gif'
 import { useContext } from 'react'
 import { MainContext } from '../context/MainContext'
 function FinishScene() {
-  const { config, setConfig } = useContext(MainContext)
+  const { config } = useContext(MainContext)
 
   return (
     <div>
