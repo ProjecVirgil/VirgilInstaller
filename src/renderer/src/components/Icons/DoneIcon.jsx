@@ -1,10 +1,10 @@
 function DoneIcon(props) {
-  const size = props.size
+  const { size, color } = props
   return (
     <div>
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0,0,256,256" width={size} height={size}>
         <g
-          fill="#20b141"
+          fill={color} //"#20b141"
           fillRule="nonzero"
           stroke="none"
           strokeWidth="1"
