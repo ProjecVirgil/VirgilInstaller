@@ -287,6 +287,8 @@ async function installDependence(event) {
       `cd ${pathPythonEnv} && .\\virgil-env\\Scripts\\activate && poetry install`
     )
 
+    stdout = await execCommand('winget install ffmpeg')
+
     event.sender.send('outputcommand', stdout)
   } catch (error) {
     event.sender.send('outputcommand', 'error ' + error)
