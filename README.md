@@ -4,16 +4,11 @@ An Electron application with React created for allow a simple installation of [V
 
 ## Showcase
 
-<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-  <!-- Immagine 1 -->
-  <div><img src="docs/img/img_1.png" alt="Descrizione Immagine 1" style="width:100%;"></div>
-  <!-- Immagine 2 -->
-  <div><img src="docs/img/img_2.png" alt="Descrizione Immagine 2" style="width:100%;"></div>
-  <!-- Immagine 3 -->
-  <div><img src="docs/img/img_3.png" alt="Descrizione Immagine 3" style="width:100%;"></div>
-  <!-- Immagine 4 -->
-  <div><img src="docs/img/img_4.png" alt="Descrizione Immagine 4" style="width:100%;"></div>
-</div>
+
+
+   <img src="docs/img/img_1.png" alt="Descrizione Immagine 4" style="width:100%;">       |  <img src="docs/img/img_2.png" alt="Descrizione Immagine 4" style="width:100%;">
+:-------------------------:|:-------------------------:
+ <img src="docs/img/img_3.png" alt="Descrizione Immagine 4" style="width:100%;"> |  <img src="docs/img/img_4.png" alt="Descrizione Immagine 4" style="width:100%;">
 
 ## Use and Installation
 
