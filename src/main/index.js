@@ -303,7 +303,7 @@ async function installDependence(event) {
     )
 
     stdout = await execCommand(
-      'winget install ffmpeg --accept-package-agreements --accept-source-agreements'
+      'winget install ffmpeg -h --accept-package-agreements --accept-source-agreements'
     )
 
     event.sender.send('outputcommand', stdout)
