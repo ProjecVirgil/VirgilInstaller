@@ -276,7 +276,7 @@ async function installDependence(event) {
     let stdout
     try {
       stdout = await execCommand('python -V')
-      if (!(stdout.strip() == 'Python 3.11.7')) {
+      if (!(stdout.trim() == 'Python 3.11.7')) {
         await execCommand(
           `cd ${pathPython} && python-3.11.7-amd64.exe /quiet InstallAllUsers=1 PrependPath=1`
         )
@@ -291,7 +291,6 @@ async function installDependence(event) {
         throw error
       }
     }
-
     // Setup Python environment
     const pathPythonEnv = path.join(baseDir)
     stdout = await execCommand(
@@ -300,7 +299,7 @@ async function installDependence(event) {
 
     // Install Poetry dependencies
     stdout = await execCommand(
-      `cd ${pathPythonEnv} && .\\virgil-env\\Scripts\\activate && poetry install`
+      `cd ${pathPythonEnv} && .\\virgil-env\\Scripts\\activate.bat && poetry install`
     )
 
     stdout = await execCommand('winget install ffmpeg')
