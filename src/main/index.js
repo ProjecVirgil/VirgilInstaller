@@ -354,7 +354,16 @@ async function setConfig(event) {
   try {
     const username = os.userInfo().username
     const last_version = await getVersionVirgil()
-    const data = await readAndParseJSONFile('config.json')
+    let data = await readAndParseJSONFile('config.json')
+
+    const validateKey = (value) => value.match(/^[a-f0-9]{32}$/i)
+    //PHASE 0
+    if (!validateKey(data.key)) {
+      const key = await createUser()
+      data.key = key
+      await writeJSONToFile('config.json', data)
+    }
+
     //PHASE 1
     if (data.startup) {
       const sourcePath = path.join(
@@ -627,7 +636,7 @@ async function init_config() {
         ),
         icon_on_desktop: true,
         display_console: true,
-        key: await createUser()
+        key: ''
       }
       const jsonData = JSON.stringify(data, null, 2)
       fs.writeFile('config.json', jsonData, 'utf8', function (err) {
