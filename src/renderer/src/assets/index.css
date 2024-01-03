@@ -270,3 +270,9 @@ body {
   color: #a58ef5;
   text-decoration-line: underline;
 }
+
+
+.input_key{
+  width: 42vw;
+  margin-top:10px;
+}
