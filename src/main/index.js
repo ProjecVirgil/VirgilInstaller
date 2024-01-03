@@ -302,7 +302,9 @@ async function installDependence(event) {
       `cd ${pathPythonEnv} && .\\virgil-env\\Scripts\\activate.bat && poetry install`
     )
 
-    stdout = await execCommand('winget install ffmpeg')
+    stdout = await execCommand(
+      'winget install ffmpeg --accept-package-agreements --accept-source-agreements'
+    )
 
     event.sender.send('outputcommand', stdout)
   } catch (error) {
