@@ -410,10 +410,3 @@ function ConfigScene(props) {
 }
 
 export default ConfigScene
-
-/*
-          <Snippet color="primary" size="sm" className="w-[100%] text-[10px]">
-            {config.key}
-          </Snippet> */
-
-// setConfig((prevConfig) => ({ ...prevConfig, key: value }))
