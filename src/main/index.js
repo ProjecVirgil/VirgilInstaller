@@ -329,6 +329,7 @@ async function createStartFile(event) {
     cd ${path_directory}
     call virgil-env\\Scripts\\activate.bat
     poetry run python launch.py
+    pause
     `
 
     const filePath = path.join(path_directory, 'start.bat')
@@ -481,6 +482,7 @@ async function setConfig(event) {
       cd ${path_directory}
       call virgil-env\\Scripts\\activate.bat
       poetry run python launch.py
+      pause
       `
       const filePath = path.join(path_directory, 'start.bat')
 
