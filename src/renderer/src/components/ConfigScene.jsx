@@ -1,12 +1,13 @@
-import { useState, useEffect, useContext } from 'react'
+import { useState, useEffect, useContext, useMemo } from 'react'
 import { MainContext } from '../context/MainContext'
-import { Button, Snippet, Checkbox } from '@nextui-org/react'
+import { Button, Checkbox, Input } from '@nextui-org/react'
 import { setJSON } from '../utils/JsonManager'
 import Tip from './Tips'
 
 function ConfigScene(props) {
   const { label } = props
   const { config, setConfig } = useContext(MainContext)
+  const [value, setValue] = useState(config.key)
 
   //Startup
   const [isSelectedG1, setIsSelectedG1] = useState(true) //YES
@@ -84,6 +85,10 @@ function ConfigScene(props) {
   }, [])
 
   useEffect(() => {
+    setConfig((prevConfig) => ({ ...prevConfig, key: value.toLowerCase() }))
+  }, [value])
+
+  useEffect(() => {
     setJSON('config.json', config)
   }, [config])
 
@@ -96,6 +101,12 @@ function ConfigScene(props) {
       return list[0] + '/' + list[1] + '/.../' + list[list.length - 1]
     }
   }
+
+  const isInvalid = useMemo(() => {
+    if (value === '') return false
+    const validateKey = (value) => value.match(/^[a-f0-9]{32}$/i)
+    return validateKey(value) ? false : true
+  }, [value])
 
   return (
     <div>
@@ -336,32 +347,62 @@ function ConfigScene(props) {
 
         <div className="div_check">
           <div className="flex">
-            <h1 className="subtitle mb-2 w-[130px]">Your config key:</h1>
+            <h1 className="subtitle mb-2 w-[180px]">You will generate a key?</h1>
             <div className="w-5">
               <Tip
                 header="The MOST important KEY"
                 content={
                   <div>
-                    <div className="text-tiny">
-                      With this key you can configure all the settings for your Virgil via mobile
-                      app; For more info see{' '}
+                    <div className="text-[16px] leading-relaxed">
+                      With this key, you can configure all the settings for your Virgil via the
+                      mobile app. For more information, see{' '}
                       <a
-                        className="underline text-[#a58ef5]"
+                        className="underline text-[#a58ef5] hover:text-[#b59ff6]"
                         target="_blank"
                         href="https://github.com/ProjecVirgil/VirgilAI"
                         rel="noreferrer"
                       >
-                        https://github.com/ProjecVirgil/VirgilAI
+                        VirgilAI
                       </a>
+                      .
+                      <br />
+                      <br />
+                      <div className="text-[14px]">
+                        You have the option to either generate the key or use a personal key. If you
+                        enter a <strong className="font-semibold">null</strong> or{' '}
+                        <strong className="font-semibold">invalid key</strong>, the key will be
+                        generated automatically.
+                      </div>
                     </div>
                   </div>
                 }
               ></Tip>
             </div>
           </div>
-          <Snippet color="primary" size="sm" className="w-[100%] text-[10px]">
-            {config.key}
-          </Snippet>
+          <div className="parentG2">
+            <Input
+              description="For more info click the '?' "
+              classNames={{
+                base: 'w-[41vw] mt-2',
+                label: 'text-black/50 dark:text-white/90',
+                input: [
+                  'bg-transparent',
+                  'text-black/90 dark:text-white/90',
+                  'placeholder:text-default-700/50 dark:placeholder:text-white/60'
+                ],
+                innerWrapper: 'bg-transparent',
+                inputWrapper:
+                  'shadow-xl border-[#a58ef5] border-1 bg-[#333544] backdrop-blur-xl backdrop-saturate-200 caret-[#a58ef5] !cursor-text'
+              }}
+              label="Virgil key"
+              placeholder="key"
+              isInvalid={isInvalid}
+              errorMessage={isInvalid && 'Please enter a valid key'}
+              value={value}
+              defaultValue={value}
+              onValueChange={setValue}
+            ></Input>
+          </div>
         </div>
       </div>
     </div>
@@ -369,3 +410,10 @@ function ConfigScene(props) {
 }
 
 export default ConfigScene
+
+/*
+          <Snippet color="primary" size="sm" className="w-[100%] text-[10px]">
+            {config.key}
+          </Snippet> */
+
+// setConfig((prevConfig) => ({ ...prevConfig, key: value }))
