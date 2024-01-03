@@ -272,9 +272,24 @@ async function installDependence(event) {
 
     // Install Python
     const pathPython = path.join(baseDir, 'setup')
-    let stdout = await execCommand(
-      `cd ${pathPython} && python-3.11.7-amd64.exe /quiet InstallAllUsers=1 PrependPath=1`
-    )
+    let stdout
+    try {
+      stdout = await execCommand('python -V')
+      if (!(stdout.strip() == 'Python 3.11.7')) {
+        await execCommand(
+          `cd ${pathPython} && python-3.11.7-amd64.exe /quiet InstallAllUsers=1 PrependPath=1`
+        )
+      }
+    } catch (error) {
+      if (error.message.includes('python is not recognized')) {
+        // Python not installed, proceed with installation
+        await execCommand(
+          `cd ${pathPython} && python-3.11.7-amd64.exe /quiet InstallAllUsers=1 PrependPath=1`
+        )
+      } else {
+        throw error
+      }
+    }
 
     // Setup Python environment
     const pathPythonEnv = path.join(baseDir)
