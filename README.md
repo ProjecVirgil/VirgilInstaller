@@ -1,41 +1,67 @@
-# Virgil-Installer 🥙 | Last docs update: 28/12/2023 (d/m/y)
+# Virgil-Installer 🥙 | Last docs update: 03/01/2024 (d/m/y)
 
 An Electron application with React created for allow a simple installation of [VirgilAI](https://github.com/ProjecVirgil/VirgilAI)
 
-## IMPORTANT❗
+## Showcase
 
-Soon the docs will be updated
+<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+  <!-- Immagine 1 -->
+  <div><img src="docs/img/img_1.png" alt="Descrizione Immagine 1" style="width:100%;"></div>
+  <!-- Immagine 2 -->
+  <div><img src="docs/img/img_2.png" alt="Descrizione Immagine 2" style="width:100%;"></div>
+  <!-- Immagine 3 -->
+  <div><img src="docs/img/img_3.png" alt="Descrizione Immagine 3" style="width:100%;"></div>
+  <!-- Immagine 4 -->
+  <div><img src="docs/img/img_4.png" alt="Descrizione Immagine 4" style="width:100%;"></div>
+</div>
 
-## Recommended IDE Setup
+## Use and Installation
 
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+1. The first step is to **download the executable file** of the latest version.
+2. **This file will take care of preparing the actual installer (strange that it is an installer for an installer).
+3. Now the actual installer will **start itself**.
+4. If you don't want to read the introductory file, type **[this page](https://github.com/ProjecVirgil/VirgilAI)**, go ahead.
+5. **Accept the "license"**.
+6. OK, now the important part: all options have their own explanation, just click **these buttons:** ![img](/docs/img/img_button.png) once the options have been chosen, go ahead.
+7. If the installation takes more than 10/15 minutes, contact support (via github or otherwise).
+8. Now go ahead and **save the key**.
+9. You can **now run VirgilAI** by simply searching for it in the search bar.
 
-## Project Setup
+## Modify the installation
 
-### Install
+> Simple re-run the installer and you can modify the config of installation
 
-```bash
-$ npm install
+## Environment installation | In details
+
+### So the installer install python version 3.11.7
+
+- If you have the same version of python should not overwrite the current
+
+- If you have a different version of python it will not overwrite the current one in the path, and when the installer uses python, it will use the installation path directly.
+
+### Python library
+
+VirgilAI use the venv environment so the libraries **will not overwrote**
+
+## Manual installation modification
+
+For modify the installation manually go on the path of installation generally `C:\Users\username\AppData\Local\Programs\Virgil-Installer` and search `config.json`
+
+The basic config can appear like this, simple modify and save the file
+
+```json
+{
+  "first_start": true,
+  "startup": false,
+  "specify_interface": false,
+  "type_interface": "N",
+  "installation_path": "C:\\Users\\deadr\\AppData\\Local\\Programs",
+  "icon_on_desktop": true,
+  "display_console": true,
+  "key": ""
+}
 ```
 
-### Development
-
-```bash
-$ npm run dev
-```
-
-### Build
-
-```bash
-# For windows
-$ npm run build:win
-
-# For macOS
-$ npm run build:mac
-
-# For Linux
-$ npm run build:linux
-```
 ## Other
 
 As mentioned above, VirgililAI is part of a larger project that includes an app, a website and others, the links of which are at Project:
@@ -55,7 +81,6 @@ The project is made by one person and is still in development, I'm looking for s
 For code related issues you can use github directly for other collaborations or alerts write to this email <projectvirgilai@gmail.com>
 
 If you want to support a small developer take a [**special link**](https://www.paypal.me/Retr0jk)
-
 
 <a href="https://www.paypal.com/paypalme/Retr0jk">
   <img width = 200 align="center" src="https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white" />
