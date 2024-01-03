@@ -518,7 +518,7 @@ async function setConfig(event) {
           data.installation_path,
           `VirgilAI-${last_version.replace('v', '')}`,
           'assets',
-          'image',
+          'img',
           'icon.ico'
         )
       })
