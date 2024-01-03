@@ -4,8 +4,6 @@ An Electron application with React created for allow a simple installation of [V
 
 ## Showcase
 
-
-
    <img src="docs/img/img_1.png" alt="Descrizione Immagine 4" style="width:100%;">       |  <img src="docs/img/img_2.png" alt="Descrizione Immagine 4" style="width:100%;">
 :-------------------------:|:-------------------------:
  <img src="docs/img/img_3.png" alt="Descrizione Immagine 4" style="width:100%;"> |  <img src="docs/img/img_4.png" alt="Descrizione Immagine 4" style="width:100%;">
