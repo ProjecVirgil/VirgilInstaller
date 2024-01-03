@@ -281,7 +281,7 @@ async function installDependence(event) {
         )
       }
     } catch (error) {
-      if (error.message.includes('python is not recognized')) {
+      if (error.message.includes('Python was not found')) {
         // Python not installed, proceed with installation
         await execCommand(
           `cd ${pathPython} && python-3.11.7-amd64.exe /quiet InstallAllUsers=1 PrependPath=1`
