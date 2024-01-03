@@ -38,6 +38,7 @@ function createWindow() {
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
+    mainWindow.setTitle('Virgil Installer v2.0.0')
   })
 
   // HMR for renderer base on electron-vite cli.
