@@ -299,7 +299,7 @@ async function installDependence(event) {
 
     // Install Poetry dependencies
     stdout = await execCommand(
-      `cd ${pathPythonEnv} && .\\virgil-env\\Scripts\\activate.bat && poetry install`
+      `cd ${pathPythonEnv} && .\\virgil-env\\Scripts\\activate.bat && poetry install --no-dev`
     )
 
     stdout = await execCommand(
