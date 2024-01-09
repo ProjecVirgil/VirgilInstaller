@@ -4,7 +4,7 @@ import path from 'path'
 import icon from '../../resources/icons/icon.png'
 import fs from 'fs'
 import axios from 'axios'
-import os from 'os'
+import os, { platform } from 'os'
 import cheerio from 'cheerio'
 import extract from 'extract-zip'
 
@@ -548,20 +548,293 @@ async function setConfig(event) {
   }
 }
 
+async function installDependenceLinux(event) {
+  try {
+    const last_version = await getVersionVirgil()
+    const data = await readAndParseJSONFile('config.json')
+
+    const baseDir = path.join(data.installation_path, `VirgilAI-${last_version.replace('v', '')}`)
+
+    // Install Python
+    let stdout
+    try {
+      stdout = await execCommand('python3 -V')
+      if (!(stdout.trim() == 'Python 3.11.4')) {
+        await execCommand(`sudo apt-get install python3.11`)
+      }
+    } catch (error) {
+      if (error.message.includes('Python was not found')) {
+        // Python not installed, proceed with installation
+        await execCommand(`sudo apt-get install python3.11`)
+      } else {
+        throw error
+      }
+    }
+    // Setup Python environment
+    const pathPythonEnv = path.join(baseDir)
+    stdout = await execCommand(
+      `cd ${pathPythonEnv} && /usr/bin/python3 -m venv virgil-env && .\\virgil-env\\Scripts\\activate.bat && cd setup && pip install -r ./requirements.txt`
+    )
+
+    // Install Poetry dependencies
+    stdout = await execCommand(
+      `cd ${pathPythonEnv} && .\\virgil-env\\Scripts\\activate.bat && poetry install --no-dev`
+    )
+
+    stdout = await execCommand('sudo apt-get install ffmpeg')
+
+    event.sender.send('outputcommand', stdout)
+  } catch (error) {
+    event.sender.send('outputcommand', 'error ' + error)
+    console.error(error)
+  }
+}
+
+async function createStartFileLinux(event) {
+  try {
+    const last_version = await getVersionVirgil()
+    const data = await readAndParseJSONFile('config.json')
+
+    const path_directory = path.join(
+      data.installation_path,
+      `VirgilAI-${last_version.replace('v', '')}`
+    )
+
+    const batContent = `
+    #!/bin/bash
+    echo Virgil is starting up
+    cd {path_directory}
+    gnome-terminal -- poetry run python3 launch.py
+    read -n1 -r -p 'Press any key...'
+    `
+
+    const filePath = path.join(path_directory, 'start.sh')
+
+    await fs.promises.writeFile(filePath, batContent)
+
+    const file_desktop = `
+[Desktop Entry]
+Version=4.0.1
+Name=VirgilAI
+Exec=${filePath}
+Icon=${path.join(
+      data.installation_path,
+      `VirgilAI-${last_version.replace('v', '')}`,
+      'assets',
+      'img',
+      'icon.png'
+    )}
+Type=Application
+Categories=AI;
+`
+
+    await fs.promises.writeFile(
+      path.join('/', 'usr', 'share', 'applications', 'virgil.desktop'),
+      file_desktop
+    )
+
+    event.sender.send('outputcommand', 'success')
+  } catch (err) {
+    console.error('Error writing to .bat file:', err)
+    event.sender.send('outputcommand', 'error ' + err.message)
+  }
+}
+
+async function setConfigLinux(event) {
+  try {
+    const username = os.userInfo().username
+    const last_version = await getVersionVirgil()
+    let data = await readAndParseJSONFile('config.json')
+
+    const validateKey = (value) => value.match(/^[a-f0-9]{32}$/i)
+    //PHASE 0
+    if (!validateKey(data.key)) {
+      const key = await createUser()
+      data.key = key
+      await writeJSONToFile('config.json', data)
+    }
+
+    //PHASE 1
+    if (data.startup) {
+      //    with open(f"/home/{os.getlogin()}/.config/autostart/virgil.desktop", "w") as file:
+      const sourcePath = path.join('/', 'usr', 'share', 'applications', 'virgil.desktop')
+      const destinationPath = path.join(
+        '/',
+        'home',
+        username,
+        '.config',
+        'autostart',
+        'virgil.dekstop'
+      )
+      fs.copyFileSync(sourcePath, destinationPath)
+    } else {
+      const filePath = path.join(
+        'C:',
+        'Users',
+        username,
+        'AppData',
+        'Roaming',
+        'Microsoft',
+        'Windows',
+        'Start Menu',
+        'Programs',
+        'Startup',
+        'VirgilAI.lnk'
+      )
+      if (fs.existsSync(filePath)) {
+        try {
+          fs.unlinkSync(filePath)
+        } catch (err) {
+          console.error('Error during the remotion of file:', err)
+        }
+      } else {
+        console.log('The file dont exist')
+      }
+    }
+    //PHASE 2
+    modifyTomlFile(
+      path.join(
+        data.installation_path,
+        `VirgilAI-${last_version.replace('v', '')}`,
+        'pyproject.toml'
+      ),
+      { default_start: data.type_interface }
+    )
+    //PHASE 3
+    if (!data.display_console) {
+      const path_directory = path.join(
+        data.installation_path,
+        `VirgilAI-${last_version.replace('v', '')}`
+      )
+      let batContent = `
+      @echo off
+      cd ${path_directory}
+      call virgil-env\\Scripts\\activate.bat
+      poetry run "C:\\Program Files\\python311\\python.exe" launch.pyw
+      `
+      const filePath = path.join(path_directory, 'start.bat')
+
+      await fs.promises.writeFile(filePath, batContent, (err) => {
+        if (err) {
+          console.error('Error writing to .bat file:', err)
+        }
+      })
+
+      await fs.promises.rename(
+        path.join(path_directory, 'launch.py'),
+        path.join(path_directory, 'launch.pyw'),
+        (err) => {
+          if (err) {
+            console.error('Error during the renaming of file:', err)
+          }
+        }
+      )
+    } else {
+      const path_directory = path.join(
+        data.installation_path,
+        `VirgilAI-${last_version.replace('v', '')}`
+      )
+      let batContent = `
+      @echo off
+      cd ${path_directory}
+      call virgil-env\\Scripts\\activate.bat
+      poetry run python launch.py
+      pause
+      `
+      const filePath = path.join(path_directory, 'start.bat')
+
+      await fs.promises.writeFile(filePath, batContent, (err) => {
+        if (err) {
+          console.error('Error writing to .bat file:', err)
+        }
+      })
+      if (fs.existsSync(path.join(path_directory, 'launch.pyw'))) {
+        await fs.promises.rename(
+          path.join(path_directory, 'launch.pyw'),
+          path.join(path_directory, 'launch.py'),
+          (err) => {
+            if (err) {
+              console.error('Error during the renaming of file:', err)
+            }
+          }
+        )
+      }
+    }
+
+    if (data.icon_on_desktop) {
+      const path_directory = path.join(
+        data.installation_path,
+        `VirgilAI-${last_version.replace('v', '')}`
+      )
+      const filePath = path.join(path_directory, 'start.bat')
+
+      ws.create(`C:\\Users\\${username}\\Desktop\\VirgilAI.lnk`, {
+        target: filePath,
+        desc: 'VirgilAI start file',
+        icon: path.join(
+          data.installation_path,
+          `VirgilAI-${last_version.replace('v', '')}`,
+          'assets',
+          'img',
+          'icon.ico'
+        )
+      })
+    } else {
+      fs.access('C:\\Users\\${username}\\Desktop\\VirgilAI.lnk', fs.constants.F_OK, (err) => {
+        const path_directory = path.join(
+          data.installation_path,
+          `VirgilAI-${last_version.replace('v', '')}`
+        )
+        const filePath = path.join(path_directory, 'start.bat')
+        if (err) {
+          console.log('The file dont exist')
+        } else {
+          fs.unlink(filePath, (err) => {
+            if (err) {
+              console.error('Error during the remotion of  file:', err)
+            }
+          })
+        }
+      })
+    }
+
+    event.sender.send('outputcommand', 'success')
+  } catch (error) {
+    console.error(error)
+    event.sender.send('outputcommand', 'error ' + error.message)
+  }
+}
+
 ipcMain.on('runcommand', (event, command) => {
   setTimeout(() => {
-    if (command === 'InsVir') {
-      installVirgil(event) //WORK
-      // event.sender.send('outputcommand', 'success')
-    } else if (command === 'InsPy') {
-      installDependence(event) //WORK
-      // event.sender.send('outputcommand', 'success')
-    } else if (command === 'CreateStartFile') {
-      createStartFile(event) //WORK
-      // event.sender.send('outputcommand', 'success')
-    } else if (command === 'SetConf') {
-      setConfig(event) // WORK
-      // event.sender.send('outputcommand', 'success')
+    if (process.platform == 'win32') {
+      if (command === 'InsVir') {
+        installVirgil(event) //WORK
+        // event.sender.send('outputcommand', 'success')
+      } else if (command === 'InsPy') {
+        installDependence(event) //WORK
+        // event.sender.send('outputcommand', 'success')
+      } else if (command === 'CreateStartFile') {
+        createStartFile(event) //WORK
+        // event.sender.send('outputcommand', 'success')
+      } else if (command === 'SetConf') {
+        setConfig(event) // WORK
+        // event.sender.send('outputcommand', 'success')
+      }
+    } else {
+      if (command === 'InsVir') {
+        installVirgil(event) //WORK
+        // event.sender.send('outputcommand', 'success')
+      } else if (command === 'InsPy') {
+        installDependenceLinux(event) //WORK
+        // event.sender.send('outputcommand', 'success')
+      } else if (command === 'CreateStartFile') {
+        createStartFileLinux(event) //WORK
+        // event.sender.send('outputcommand', 'success')
+      } else if (command === 'SetConf') {
+        setConfigLinux(event) // WORK
+        // event.sender.send('outputcommand', 'success')
+      }
     }
   }, 500)
 })
@@ -645,14 +918,10 @@ async function init_config() {
         startup: false,
         specify_interface: false,
         type_interface: 'N',
-        installation_path: path.join(
-          'C:',
-          'Users',
-          os.userInfo().username,
-          'AppData',
-          'Local',
-          'Programs'
-        ),
+        installation_path:
+          process.platform == 'win32'
+            ? path.join('C:', 'Users', os.userInfo().username, 'AppData', 'Local', 'Programs')
+            : path.join('/', 'user', 'bin'),
         icon_on_desktop: true,
         display_console: true,
         key: ''
