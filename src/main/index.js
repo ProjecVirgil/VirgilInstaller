@@ -7,7 +7,7 @@ import axios from 'axios'
 import os from 'os'
 import cheerio from 'cheerio'
 
-import { installVirgil, installDependence, createStartFile, setConfig } from './installation'
+import { installVirgil, installDependence, createStartFile, setConfig } from './installation-win.js'
 import { readAndParseJSONFile, writeJSONToFile } from './utils.js'
 
 let mainWindow
@@ -174,18 +174,32 @@ function check_if_update(actual, last_version) {
 
 ipcMain.on('runcommand', (event, command) => {
   setTimeout(() => {
-    if (command === 'InsVir') {
-      installVirgil(event, app) //WORK
-      // event.sender.send('outputcommand', 'success')
-    } else if (command === 'InsPy') {
-      installDependence(event) //WORK
-      // event.sender.send('outputcommand', 'success')
-    } else if (command === 'CreateStartFile') {
-      createStartFile(event) //WORK
-      // event.sender.send('outputcommand', 'success')
-    } else if (command === 'SetConf') {
-      setConfig(event) // WORK
-      // event.sender.send('outputcommand', 'success')
+    if (process.platform == 'win32') {
+      if (command === 'InsVir') {
+        installVirgil(event, app) //WORK
+        // event.sender.send('outputcommand', 'success')
+      } else if (command === 'InsPy') {
+        installDependence(event) //WORK
+        // event.sender.send('outputcommand', 'success')
+      } else if (command === 'CreateStartFile') {
+        createStartFile(event) //WORK
+        // event.sender.send('outputcommand', 'success')
+      } else if (command === 'SetConf') {
+        setConfig(event) // WORK
+        // event.sender.send('outputcommand', 'success')
+      }
+    } else {
+      //FUNZIONI LINUX NEL MODULO INSTALLATION LINUX
+      if (command === 'InsVir') {
+        installVirgil(event, app) //WORK
+        // event.sender.send('outputcommand', 'success')
+      } else if (command === 'InsPy') {
+        // event.sender.send('outputcommand', 'success')
+      } else if (command === 'CreateStartFile') {
+        // event.sender.send('outputcommand', 'success')
+      } else if (command === 'SetConf') {
+        // event.sender.send('outputcommand', 'success')
+      }
     }
   }, 500)
 })

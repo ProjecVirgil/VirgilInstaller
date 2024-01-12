@@ -5,6 +5,7 @@ import cheerio from 'cheerio'
 const toml = require('@iarna/toml')
 const { exec } = require('child_process')
 
+//! MODULE FOR UTILS FUNCTION LIKE READ,WRITE IN JSON, READ FILE TOML AND EXECUTE COMMAND
 export function execCommand(command) {
   return new Promise((resolve, reject) => {
     exec(command, { shell: true }, (error, stdout) => {

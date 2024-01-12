@@ -14,7 +14,7 @@ import {
   modifyTomlFile
 } from './utils.js'
 
-// ----- WINDOWS -------
+//* ----- WINDOWS -------
 export async function installVirgil(event, app) {
   try {
     const lastVersion = await getVersionVirgil()
@@ -316,54 +316,3 @@ export async function setConfig(event) {
     event.sender.send('outputcommand', 'error ' + error.message)
   }
 }
-
-// ----- LINUX -------
-
-export async function installDependenceL(event) {
-    try {
-      const last_version = await getVersionVirgil()
-      const data = await readAndParseJSONFile('config.json')
-  
-      const baseDir = path.join(data.installation_path, `VirgilAI-${last_version.replace('v', '')}`)
-  
-      // Install Python
-      const pathPython = path.join(baseDir, 'setup')
-      let stdout
-      try {
-        stdout = await execCommand('python -V')
-        if (!(stdout.trim() == 'Python 3.11.7')) {
-          await execCommand(
-            `cd ${pathPython} && python-3.11.7-amd64.exe /quiet InstallAllUsers=1 PrependPath=1`
-          )
-        }
-      } catch (error) {
-        if (error.message.includes('Python was not found')) {
-          // Python not installed, proceed with installation
-          await execCommand(
-            `cd ${pathPython} && python-3.11.7-amd64.exe /quiet InstallAllUsers=1 PrependPath=1`
-          )
-        } else {
-          throw error
-        }
-      }
-      // Setup Python environment
-      const pathPythonEnv = path.join(baseDir)
-      stdout = await execCommand(
-        `cd ${pathPythonEnv} && "C:\\Program Files\\Python311\\python.exe" -m venv virgil-env && .\\virgil-env\\Scripts\\activate.bat && cd setup && pip install -r ./requirements.txt`
-      )
-  
-      // Install Poetry dependencies
-      stdout = await execCommand(
-        `cd ${pathPythonEnv} && .\\virgil-env\\Scripts\\activate.bat && poetry install --no-dev`
-      )
-  
-      stdout = await execCommand(
-        'winget install ffmpeg -h --accept-package-agreements --accept-source-agreements'
-      )
-  
-      event.sender.send('outputcommand', stdout)
-    } catch (error) {
-      event.sender.send('outputcommand', 'error ' + error)
-      console.error(error)
-    }
-  }
