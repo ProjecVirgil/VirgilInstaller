@@ -37,40 +37,15 @@ export async function installDependence(event) {
   try {
     const last_version = await getVersionVirgil()
     const data = await readAndParseJSONFile('config.json')
-    const username = os.userInfo().username
     const baseDir = path.join(data.installation_path, `VirgilAI-${last_version.replace('v', '')}`)
 
-    // Install Python
-    const pathPython = path.join(baseDir, 'setup')
     let stdout
-    try {
-      stdout = await execCommand('python -V')
-      if (!(stdout.trim() == 'Python 3.11.7')) {
-        await execCommand(
-          `cd ${pathPython} && python-3.11.7-amd64.exe /quiet InstallAllUsers=1 PrependPath=1`
-        )
-      }
-    } catch (error) {
-      if (error.message.includes('Python was not found')) {
-        // Python not installed, proceed with installation
-        await execCommand(
-          `cd ${pathPython} && python-3.11.7-amd64.exe /quiet InstallAllUsers=1 PrependPath=1`
-        )
-      } else {
-        throw error
-      }
-    }
     // Setup Python environment
     const pathPythonEnv = path.join(baseDir)
-    try {
-      stdout = await execCommand(
-        `cd ${pathPythonEnv} && "C:\\Program Files\\Python311\\python.exe" -m venv virgil-env && .\\virgil-env\\Scripts\\activate.bat && cd setup && pip install -r ./requirements.txt`
-      )
-    } catch {
-      stdout = await execCommand(
-        `cd ${pathPythonEnv} && "C:\\Users\\${username}\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe" -m venv virgil-env && .\\virgil-env\\Scripts\\activate.bat && cd setup && pip install -r ./requirements.txt`
-      )
-    }
+
+    stdout = await execCommand(
+      `cd ${pathPythonEnv} && python -m venv virgil-env && .\\virgil-env\\Scripts\\activate.bat && cd setup && pip install -r ./requirements.txt`
+    )
 
     // Install Poetry dependencies
     stdout = await execCommand(
