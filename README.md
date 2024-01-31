@@ -8,6 +8,10 @@ An Electron application with React created for allow a simple installation of [V
 :-------------------------:|:-------------------------:
  <img src="docs/img/img_3.png" alt="Descrizione Immagine 4" style="width:100%;"> |  <img src="docs/img/img_4.png" alt="Descrizione Immagine 4" style="width:100%;">
 
+## Prerequisite
+
+- Python (3.11 >=)
+
 ## Use and Installation
 
 1. The first step is to **download the executable file** of the latest version.
