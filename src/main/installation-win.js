@@ -37,7 +37,7 @@ export async function installDependence(event) {
   try {
     const last_version = await getVersionVirgil()
     const data = await readAndParseJSONFile('config.json')
-
+    const username = os.userInfo().username
     const baseDir = path.join(data.installation_path, `VirgilAI-${last_version.replace('v', '')}`)
 
     // Install Python
@@ -62,9 +62,15 @@ export async function installDependence(event) {
     }
     // Setup Python environment
     const pathPythonEnv = path.join(baseDir)
-    stdout = await execCommand(
-      `cd ${pathPythonEnv} && "C:\\Program Files\\Python311\\python.exe" -m venv virgil-env && .\\virgil-env\\Scripts\\activate.bat && cd setup && pip install -r ./requirements.txt`
-    )
+    try {
+      stdout = await execCommand(
+        `cd ${pathPythonEnv} && "C:\\Program Files\\Python311\\python.exe" -m venv virgil-env && .\\virgil-env\\Scripts\\activate.bat && cd setup && pip install -r ./requirements.txt`
+      )
+    } catch {
+      stdout = await execCommand(
+        `cd ${pathPythonEnv} && "C:\\Users\\${username}\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe" -m venv virgil-env && .\\virgil-env\\Scripts\\activate.bat && cd setup && pip install -r ./requirements.txt`
+      )
+    }
 
     // Install Poetry dependencies
     stdout = await execCommand(
