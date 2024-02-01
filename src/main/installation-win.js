@@ -203,7 +203,7 @@ export async function setConfig(event) {
         @echo off
         cd ${path_directory}
         call virgil-env\\Scripts\\activate.bat
-        poetry run "C:\\Program Files\\python311\\python.exe" launch.pyw
+        poetry run python launch.pyw
         `
       const filePath = path.join(path_directory, 'start.bat')
 
@@ -273,7 +273,7 @@ export async function setConfig(event) {
         )
       })
     } else {
-      fs.access('C:\\Users\\${username}\\Desktop\\VirgilAI.lnk', fs.constants.F_OK, (err) => {
+      fs.access(`C:\\Users\\${username}\\Desktop\\VirgilAI.lnk`, fs.constants.F_OK, (err) => {
         const path_directory = path.join(
           data.installation_path,
           `VirgilAI-${last_version.replace('v', '')}`
